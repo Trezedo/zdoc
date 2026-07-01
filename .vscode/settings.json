@@ -1,0 +1,26 @@
+{
+    "css.lint.unknownAtRules": "ignore", // 禁用 tailwindcss 规则的警告
+    "scss.lint.unknownAtRules": "ignore", // 如果使用 SCSS
+    "editor.formatOnSave": true,
+    "material-icon-theme.folders.associations": {
+        "jsa": "javascript"
+    },
+    "cSpell.words": [
+        "addin",
+        "esbuild",
+        "jsaddons",
+        "jsapi",
+        "jsplugins",
+        "kingsoft",
+        "lefthook",
+        "radash",
+        "screentip",
+        "supertip",
+        "taskpane",
+        "vite",
+        "vitest",
+        "vnode",
+        "wpsjs",
+        "zdoc"
+    ]
+}
