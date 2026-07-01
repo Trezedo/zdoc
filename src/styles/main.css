@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* 自定义卡片样式 */
+    .card {
+        @apply bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden;
+    }
+}
