@@ -1,0 +1,14 @@
+node_modules
+dist
+.vitest/
+
+# wpsjs build 或 publish 使用的目录
+wps-addon-*
+
+# unplugin 自动生成的类型声明文件
+auto-imports.d.ts
+components.d.ts
+
+# vue router 自动生成的类型声明文件
+typed-router.d.ts
+ribbon-images.d.ts
