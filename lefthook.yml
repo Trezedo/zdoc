@@ -1,0 +1,8 @@
+pre-commit:
+    parallel: true # 并行执行
+    commands:
+        # 格式化代码的命令
+        prettier:
+            glob: "*.{js,ts,jsx,tsx,json,md,css,scss,vue,html}" # 需要处理的文件类型
+            run: npx prettier --write {staged_files} # 运行 Prettier
+            stage_fixed: true # 自动将格式化后的文件提交

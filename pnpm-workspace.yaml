@@ -1,0 +1,13 @@
+packages:
+  - "plugins/*"
+
+allowBuilds:
+  "@parcel/watcher": true
+  core-js: true
+  esbuild: true
+  lefthook: true
+
+# 定义版本目录，供工作区中的多个包共享依赖版本
+catalog:
+  vite: ^8.0.16
+  vue-router: ^5.1.0

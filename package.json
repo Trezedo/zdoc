@@ -1,0 +1,52 @@
+{
+    "name": "zdoc",
+    "addonType": "wps",
+    "version": "1.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "postinstall": "pnpm exec lefthook install",
+        "predev": "pnpm build:lib",
+        "dev": "vite --port 3889",
+        "build": "vite build",
+        "build:lib": "pnpm -r --filter vite-plugin-ribbon build",
+        "build:zip": "wpsjs build",
+        "build:exe": "wpsjs build --exe",
+        "preview": "vite preview",
+        "fmt": "prettier --write src/",
+        "clear": "rimraf node_modules",
+        "typecheck": "pnpm exec tsc --noEmit",
+        "test": "vitest"
+    },
+    "dependencies": {
+        "axios": "^1.18.0",
+        "core-js": "^3.49.0",
+        "naive-ui": "^2.44.1",
+        "radash": "^12.1.1",
+        "vue": "^3.5.38",
+        "vue-router": "catalog:"
+    },
+    "devDependencies": {
+        "@types/node": "^25.9.4",
+        "@vitejs/plugin-vue": "^6.0.7",
+        "@vueuse/core": "^14.3.0",
+        "autoprefixer": "^10.5.0",
+        "chinese-number-format": "^2.0.3",
+        "lefthook": "^2.1.9",
+        "postcss": "^8.5.15",
+        "prettier": "^3.8.4",
+        "sass": "^1.101.0",
+        "tailwindcss": "^3.4.19",
+        "typescript": "^6.0.3",
+        "unplugin-auto-import": "^21.0.0",
+        "unplugin-vue-components": "^32.1.0",
+        "vite": "catalog:",
+        "vite-plugin-bundle-obfuscator": "^1.12.0",
+        "vite-plugin-ribbon": "workspace:*",
+        "vitest": "^4.1.9",
+        "wps-jsapi-declare": "^2.2.0"
+    },
+    "engines": {
+        "pnpm": ">=11.0.0"
+    }
+}
