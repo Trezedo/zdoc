@@ -1,0 +1,29 @@
+{
+    "name": "vite-plugin-ribbon",
+    "version": "1.0.0",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
+        },
+        "./factory": {
+            "import": {
+                "types": "./dist/factory.d.ts",
+                "default": "./dist/factory.js"
+            }
+        }
+    },
+    "devDependencies": {
+        "chokidar": "^5.0.0",
+        "picocolors": "^1.1.1",
+        "vite": "catalog:"
+    }
+}
