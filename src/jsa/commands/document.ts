@@ -1,0 +1,264 @@
+import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
+import type { PageLayoutOptions } from "@/types";
+import { handleAttachments } from "@/utils";
+import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
+
+/**
+ * 设置当前文档的页面布局
+ * @param options 页面参数
+ */
+export function setPageLayout(options: PageLayoutOptions = {}, doc: Wps.Document = ActiveDocument) {
+    const {
+        top: top = 3.7,
+        bottom: bottom = 3.5,
+        left: left = 2.8,
+        right: right = 2.6,
+        header: header = 1.5,
+        footer: footer = 2.4,
+    } = options;
+
+    const ps = doc.PageSetup; // 获取页面设置对象
+    // 设置上下左右边距（厘米）
+    ps.TopMargin = Application.CentimetersToPoints(top);
+    ps.BottomMargin = Application.CentimetersToPoints(bottom);
+    ps.LeftMargin = Application.CentimetersToPoints(left);
+    ps.RightMargin = Application.CentimetersToPoints(right);
+    // 页眉页脚
+    ps.HeaderDistance = Application.CentimetersToPoints(header);
+    ps.FooterDistance = Application.CentimetersToPoints(footer);
+}
+
+/**
+ * 删除非内置的自定义样式，例如 "公文正文"、"公文标题"
+ */
+export function deleteNonBuiltInStyles(doc: Wps.Document = ActiveDocument) {
+    const styles = doc.Styles;
+    let nameArr = []; // 记录删除了哪些
+    // 从后往前删
+    for (let i = styles.Count; i >= 1; i--) {
+        let s = styles.Item(i);
+        // 避免删除字符样式（删了似乎不影响，但是计数有错误）
+        if (s.Type == wdStyleTypeParagraph && !s.BuiltIn) {
+            nameArr.push(s.NameLocal);
+            s.Delete();
+        }
+    }
+    let msg = "共删除 " + nameArr.length + " 个样式：" + nameArr.join("、");
+    Application.PluginStorage.setItem(STORAGE_KEYS.MESSAGE, msg);
+}
+
+/**
+ * 清除范围或全文的底纹背景（常见白色背景）
+ */
+export function removeShadingBackground() {
+    const sel = Application.Selection;
+    let range = sel.Type == wdSelectionIP ? ActiveDocument.Content : sel.Range;
+
+    range.HighlightColorIndex = wdAuto; // 清除背景高亮
+
+    // 根据不同文档录制，Shading 居然有 3 处入口，为了防止遗漏都需要重置
+    const rs = range.Shading,
+        ps = range.ParagraphFormat.Shading,
+        fs = range.Font.Shading;
+
+    rs.Texture = wdTextureNone; // 清除底纹纹理，下同
+    rs.BackgroundPatternColor = wdColorAutomatic; // 背景色设为自动（清除颜色）
+
+    ps.Texture = wdTextureNone;
+    ps.BackgroundPatternColor = wdColorAutomatic;
+
+    fs.Texture = wdTextureNone;
+    fs.BackgroundPatternColor = wdColorAutomatic;
+
+    const ts = range.Tables.Item(1)?.Shading; // 表格
+    if (ts) {
+        ts.Texture = wdTextureNone;
+        ts.BackgroundPatternColor = wdColorAutomatic;
+    }
+}
+
+/**
+ * 将选定段落开头的空格转换为首行缩进（字符单位）
+ *
+ * 规则：1个全角空格 → 1字符缩进，2个半角空格 → 1字符缩进
+ */
+export function convertSpaceToIndent() {
+    const paras = Application.Selection.Paragraphs;
+    if (paras.Count === 0) {
+        alert("请先选择需要处理的文本区域！");
+        return;
+    }
+
+    for (let i = 1; i <= paras.Count; i++) {
+        const para = paras.Item(i);
+        let rng = para.Range;
+        let text = rng.Text;
+
+        // 正则匹配开头的全角+半角空格
+        let match = text.match(/^[\u3000 ]+/);
+        if (!match) continue;
+
+        let spaces = match[0];
+        let fullCount = (spaces.match(/\u3000/g) || []).length; // 全角空格数
+        let halfCount = (spaces.match(/ /g) || []).length; // 半角空格数
+
+        let spaceCount = fullCount + halfCount;
+        if (spaceCount === 0) continue; // 无前导空格，跳过
+
+        // 删除开头的空格
+        let delRng = rng.Duplicate;
+        delRng.End = delRng.Start + spaceCount;
+        delRng.Delete();
+
+        // 计算缩进单位
+        let indentUnits = fullCount + halfCount / 2;
+        if (indentUnits === 0) continue;
+
+        // 设置段落的首行缩进
+        para.Format.CharacterUnitFirstLineIndent = indentUnits;
+        para.Format.FirstLineIndent = 0;
+    }
+}
+
+/**
+ * 将选定段落的首行缩进（字符单位）转换为全角空格
+ */
+export function convertIndentToSpace() {
+    const paras = Application.Selection.Paragraphs;
+    const count = paras.Count;
+    if (count === 0) {
+        alert("请先选择需要处理的文本区域！");
+        return;
+    }
+    for (let i = 1; i <= count; i++) {
+        const para = paras.Item(i);
+        const indents = para.CharacterUnitFirstLineIndent;
+        if (indents <= 0) continue; // 无缩进或负数缩进（悬挂缩进）则跳过
+        para.CharacterUnitFirstLineIndent = 0;
+        para.FirstLineIndent = 0;
+
+        const prefix = "\u3000".repeat(indents);
+        para.Range.InsertBefore(prefix);
+    }
+}
+
+export interface RangeIndex {
+    startIndex: number;
+    endIndex: number;
+    text: string;
+}
+
+/**
+ * 提取所有附件段落
+ * @param doc 文档
+ */
+export function getAttachmentsRangesIndex(doc: Wps.Document = ActiveDocument): RangeIndex[] {
+    const ranges = [];
+    const rng = doc.Content;
+
+    const find = rng.Find;
+    find.ClearFormatting();
+    // 对应正则表达式 attachmentList
+    find.Text = attachmentListWildcards; // 这里只找“附件”开头到结尾，^p 只用于定位
+    find.MatchCase = false; // 不区分大小写
+    find.MatchWildcards = true; // 使用通配符
+
+    while (find.Execute()) {
+        // 获取当前匹配所在段落的起始位置（即前一个 ^p 的后面）
+        const paraStart = rng.Paragraphs.Item(1).Range.Start;
+
+        rng.Start = paraStart; // 其下一空段仅用于搜索定位，不应包含在处理范围
+
+        const trimmed = rng.Duplicate;
+        trimmed.End = trimmed.End - 2; // 去掉末尾的 2 个段落符
+
+        ranges.push({
+            startIndex: trimmed.Start,
+            endIndex: trimmed.End,
+            text: trimmed.Text, // 此时末尾只有单个 \r
+        });
+
+        rng.Collapse(0); // 折叠到匹配文本之后，继续向下查找
+    }
+    return ranges;
+}
+
+/**
+ * 提取所有附件段落
+ * @deprecated 已弃用，基于 `doc.Content.Text`，当文档中有表格、图形、文本框、域时，文本索引会发生偏移
+ */
+export function getAttachmentsRangeIndex(doc: Wps.Document = ActiveDocument): RangeIndex[] {
+    const selection = Application.Selection;
+
+    const ranges: RangeIndex[] = [];
+    if (!doc.Content.Text.includes("附件")) return ranges;
+    // 要求附件说明之后必须有 1 个空段落
+    const regex = attachmentListRegex;
+    // 判断选区是否有效（有选中文本，且不是插入点）
+    const hasSelection = selection.Type !== wdSelectionIP;
+
+    let fullText: string;
+    let baseOffset = 0; // 匹配文本在全文中的起始偏移量
+
+    if (hasSelection) {
+        // 仅处理选中的范围
+        const selRange = selection.Range;
+        baseOffset = selRange.Start; // 选区在全文中的起始索引
+        // 去掉选区末尾的段落符
+        fullText = selRange.Text.replace(/\r+$/, "");
+    } else {
+        // 处理整个文档
+        baseOffset = 0;
+        fullText = doc.Content.Text;
+    }
+
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(fullText)) !== null) {
+        const startIndex = baseOffset + match.index;
+        const endIndex = startIndex + match[0].length;
+        ranges.push({ startIndex, endIndex, text: match[0] });
+    }
+
+    return ranges;
+}
+
+/**
+ * 格式化公文中的“附件说明”
+ * @param doc 文档
+ */
+export function formatAttachments(doc: Wps.Document = ActiveDocument) {
+    const index1 = getAttachmentsRangesIndex();
+    for (let i = index1.length - 1; i >= 0; i--) {
+        const item = index1[i];
+        const result = handleAttachments(item.text);
+        const range = doc.Range(item.startIndex, item.endIndex);
+        range.Text = result;
+    }
+    // 去掉空格开头并转为缩进
+    // 因为涉及字符删除，需要逆序遍历
+    const index2 = getAttachmentsRangesIndex();
+    for (let i = index2.length - 1; i >= 0; i--) {
+        const item = index2[i];
+        const paras = doc.Range(item.startIndex, item.endIndex).Paragraphs;
+        const paraCount = paras.Count;
+        for (let j = 1; j <= paraCount; j++) {
+            const para = paras.Item(j);
+            const rng = para.Range;
+            const text = rng.Text;
+            // 匹配开头全角和半角空格
+            const match = text.match(/^\u3000+/);
+            if (!match) continue;
+
+            const spaces = match[0];
+            const spaceCount = (spaces.match(/\u3000/g) || []).length; // 全角空格数
+
+            let delRng = rng.Duplicate;
+            delRng.End = delRng.Start + spaceCount;
+            delRng.Delete();
+
+            para.Format.CharacterUnitFirstLineIndent = spaceCount;
+            para.Format.FirstLineIndent = 0;
+            // 这里让用户手动把空格转缩进
+        }
+    }
+}
