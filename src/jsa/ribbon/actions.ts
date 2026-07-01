@@ -10,12 +10,7 @@ import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
 import { oneClickTypography } from "@/jsa/commands/govDoc";
 import { getConfigWithDefault } from "@/config/typography";
 import { getRouterUrl } from "@/utils";
-import {
-    showImageResizeTaskPane,
-    showLayoutTaskPane,
-    showOfficialTaskPane,
-    STORAGE_KEYS,
-} from "./taskPane";
+import { STORAGE_KEYS, showTaskPane } from "./taskPane";
 import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
 import type { TypographyConfig } from "@/types";
 import { withUndoRecord, loadConfigLocal } from "@/jsa/utils/document";
@@ -68,7 +63,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
         const config = getConfigWithDefault();
         oneClickTypography(config);
     },
-    btnTypoConfig: showOfficialTaskPane,
+    btnTypoConfig: () => showTaskPane(STORAGE_KEYS.DOC_SETTINGS_ID),
     btnImageTypo: () => withUndoRecord("排版图片", formatInlineImages),
     btnTableTypo: () => {},
     btnJustifyAttach: () => withUndoRecord("对齐附件", formatAttachments),
@@ -96,9 +91,6 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
         );
     },
     btnRemoveShading: () => withUndoRecord("清除底纹背景", removeShadingBackground),
-
-    // 页面布局
-    btnPageLayoutConfig: showLayoutTaskPane,
 
     // 快捷样式
     btnFontSize2: () => {
@@ -172,7 +164,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     },
 
     // 图片工具
-    btnPictureResize: showImageResizeTaskPane,
+    btnPictureResize: () => showTaskPane(STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID),
     btnExportPicture: exportAllImages,
 
     btnClearEmptyPara: () => {

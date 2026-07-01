@@ -6,7 +6,7 @@ export const STORAGE_KEYS = {
     // 公文排版配置
     OFFICIAL_TYPOGRAPHY_CONFIG: "official_typography_config",
     // 任务窗格相关
-    OFFICIAL_TASKPANE_ID: "official_taskpane_id",
+    DOC_SETTINGS_ID: "official_taskpane_id",
     PAGE_SETUP_TASKPANE_ID: "page_setup_taskpane_id",
     IMAGE_RESIZE_TASKPANE_ID: "image_resize_taskpane_id",
     // 功能开关
@@ -20,7 +20,7 @@ export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 interface TaskPaneConfig {
     storageKey: string;
-    routePath: string;
+    routePath: keyof RouteNamedMap;
     onCreate?: (taskPaneId: number) => void;
 }
 
@@ -28,8 +28,7 @@ interface TaskPaneConfig {
 const paneIdCache = new Map<string, number>();
 
 const TASK_PANE_CONFIGS: TaskPaneConfig[] = [
-    { storageKey: STORAGE_KEYS.OFFICIAL_TASKPANE_ID, routePath: "/typography" },
-    { storageKey: STORAGE_KEYS.PAGE_SETUP_TASKPANE_ID, routePath: "/page-setup" },
+    { storageKey: STORAGE_KEYS.DOC_SETTINGS_ID, routePath: "/settings" },
     { storageKey: STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID, routePath: "/image-resize" },
 ];
 
@@ -54,6 +53,10 @@ function removePaneId(storageKey: string): void {
     Application.PluginStorage.removeItem(storageKey);
 }
 
+function getRoutePath(storageKey: string): keyof RouteNamedMap | undefined {
+    return TASK_PANE_CONFIGS.find((p) => p.storageKey === storageKey)?.routePath;
+}
+
 function hideAllOtherPanes(excludeStorageKey: string): void {
     for (const pane of TASK_PANE_CONFIGS) {
         if (pane.storageKey === excludeStorageKey) continue;
@@ -69,7 +72,7 @@ function hideAllOtherPanes(excludeStorageKey: string): void {
     }
 }
 
-export function showTaskPane(storageKey: string, routePath: keyof RouteNamedMap): void {
+export function showTaskPane(storageKey: string): void {
     hideAllOtherPanes(storageKey);
 
     let paneId = getPaneId(storageKey);
@@ -77,9 +80,15 @@ export function showTaskPane(storageKey: string, routePath: keyof RouteNamedMap)
 
     if (!taskPane) {
         if (paneId) removePaneId(storageKey);
+        const routePath = getRoutePath(storageKey);
+        if (!routePath) {
+            console.error(`找不到路由路径: ${storageKey}`);
+            return;
+        }
         const url = getRouterUrl(routePath);
         taskPane = Application.CreateTaskPane(url);
-        let width = (Application.System.HorizontalResolution / 4) * window.devicePixelRatio;
+        // 介于 1/3 和 1/4 之间的屏幕宽度
+        let width = Application.System.HorizontalResolution * 0.28 * window.devicePixelRatio;
         taskPane.MinWidth = ~~width;
         if (!taskPane) {
             console.error(`创建任务窗格失败: ${storageKey}`);
@@ -89,16 +98,4 @@ export function showTaskPane(storageKey: string, routePath: keyof RouteNamedMap)
     }
 
     taskPane.Visible = true;
-}
-
-export function showOfficialTaskPane(): void {
-    showTaskPane(STORAGE_KEYS.OFFICIAL_TASKPANE_ID, "/official");
-}
-
-export function showLayoutTaskPane(): void {
-    showTaskPane(STORAGE_KEYS.PAGE_SETUP_TASKPANE_ID, "/page-setup");
-}
-
-export function showImageResizeTaskPane(): void {
-    showTaskPane(STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID, "/image-resize");
 }

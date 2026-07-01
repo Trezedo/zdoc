@@ -7,19 +7,18 @@
           <splitButton id="sb排版" size="large" supertip="适用于对文字内容快速调整格式">
             <button id="btnGovDocTypo" label="快速排版" onAction="onAction" imageMso="TextStyle" />
             <menu id="menu1" label="排版菜单" getImage="getImage">
-              <button id="btnTypoConfig" label="排版设置" onAction="onAction" getImage="getImage" />
               <button id="btnImageTypo" label="排版图片" onAction="onAction" imageMso="GeneratePicture" />
               <button id="btnTableTypo" label="排版表格" onAction="onAction" imageMso="AiSmartOrganize" />
               <button id="btnJustifyAttach" label="附件对齐" onAction="onAction" imageMso="OfficialAttachmentList" />
               <button id="btnBatchTypo" label="批量排版" onAction="onAction" imageMso="SmartRearrange" />
             </menu>
           </splitButton>
+          <button id="btnTypoConfig" label="排版设置" onAction="onAction" size="large" getImage="getImage" />
           <menu id="mnuClear" label="清除格式" size="large" imageMso="ClearAll">
             <button id="btnClearFormat" label="清除格式（选区/全文）" onAction="onAction" imageMso="ClearFormats" />
             <button id="btnClearNonBuiltinStyles" label="删除非内置样式" onAction="onAction" imageMso="ClearStyle" />
             <button id="btnRemoveShading" label="清除底纹背景" onAction="onAction" getImage="getImage" />
           </menu>
-          <button id="btnPageLayoutConfig" label="页面布局" onAction="onAction" size="large" imageMso="MoreMarginsOption" />
         </group>
         <group id="grpStyle" label="快捷样式">
           <separator />

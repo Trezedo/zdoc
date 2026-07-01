@@ -21,7 +21,6 @@ export const xmlConfig = RibbonBuilder.create({
                         imageMso: "TextStyle",
                     }),
                     menu("排版菜单", "menu1", [
-                        button("排版设置", "btnTypoConfig"),
                         button("排版图片", "btnImageTypo", {
                             imageMso: "GeneratePicture",
                         }),
@@ -32,6 +31,10 @@ export const xmlConfig = RibbonBuilder.create({
                         button("批量排版", "btnBatchTypo", { imageMso: "SmartRearrange" }),
                     ]),
                 ]),
+                button("排版设置", "btnTypoConfig", {
+                    // imageMso: "MoreMarginsOption",
+                    size: "large",
+                }),
                 menu("清除格式", "mnuClear", { size: "large", imageMso: "ClearAll" }, [
                     button("清除格式（选区/全文）", "btnClearFormat", {
                         imageMso: "ClearFormats",
@@ -41,10 +44,6 @@ export const xmlConfig = RibbonBuilder.create({
                     }),
                     button("清除底纹背景", "btnRemoveShading"),
                 ]),
-                button("页面布局", "btnPageLayoutConfig", {
-                    imageMso: "MoreMarginsOption",
-                    size: "large",
-                }),
             ]),
             group("快捷样式", "grpStyle", [
                 separator(),

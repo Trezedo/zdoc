@@ -85,6 +85,11 @@ export interface PageLayoutOptions {
     footer?: number;
 }
 
+export interface GovDocConfig {
+    typography: TypographyConfig;
+    pageLayout: PageLayoutOptions;
+}
+
 export interface ParaInfo {
     index: number; // 段落序号（1-based）
     isEmpty: boolean; // 是否空行（trim 后为空）
