@@ -1,7 +1,7 @@
 <template>
-    <div class="grid grid-cols-2 gap-4">
+    <div class="border rounded-md p-4 shadow grid grid-cols-2 gap-4">
         <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">上边距</label>
+            <label class="text-sm font-medium text-gray-700">上边距：</label>
             <div class="flex flex-1 items-center gap-1">
                 <n-input-number
                     v-model:value="localConfig.top"
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">下边距</label>
+            <label class="text-sm font-medium text-gray-700">下边距：</label>
             <div class="flex flex-1 items-center gap-1">
                 <n-input-number
                     v-model:value="localConfig.bottom"
@@ -29,7 +29,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">左边距</label>
+            <label class="text-sm font-medium text-gray-700">左边距：</label>
             <div class="flex flex-1 items-center gap-1">
                 <n-input-number
                     v-model:value="localConfig.left"
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">右边距</label>
+            <label class="text-sm font-medium text-gray-700">右边距：</label>
             <div class="flex flex-1 items-center gap-1">
                 <n-input-number
                     v-model:value="localConfig.right"
@@ -89,7 +89,7 @@
 
 <script setup lang="ts">
 import { setPageLayout } from "@/jsa/commands/document";
-import type { PageLayoutOptions } from "@/types";
+import type { PageLayoutOptions } from "@/jsa/types";
 
 const props = defineProps<{
     modelValue: PageLayoutOptions;

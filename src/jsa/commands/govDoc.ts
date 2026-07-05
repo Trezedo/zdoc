@@ -1,19 +1,15 @@
-import { getDefaultConfig } from "@/config/typography";
-import type { SimpleFontConfig, TopicBoldMode, TypographyConfig } from "@/types";
+import { getDefaultTypoConfig } from "@/config/typography";
 import { withUndoRecord } from "@/jsa/utils/document";
-
-import { formatAttachments } from "./document";
+import type { SimpleFontConfig, TopicBoldMode, TypographyConfig } from "@/jsa/types";
 import { findMainTitleBlocks, isSubtitleLine, type ParaInfo } from "@/utils";
 
-const typographyContext = {
-    titleSeeds: [] as number[],
-};
+import { formatAttachments } from "./document";
 
 // 注意：同段内有多个需要匹配的才加 g 标志
 const salutationRegex = /^[^《》〔〕：]*：\r$/; // 抬头；发文事由可能包含转发上级的文件（书名号、六角括号）
 const h1Regex = /^[一二三四五六七八九十]+、.*?(?:。|[^；;]\r)/; // 以分号结尾视为列表而不是层级标题
-const h2Regex = /^（[一二三四五六七八九十]+）.{1,23}(?:。|[^；;]\r)/;
-const h3Regex = /^[0-9]{1,2}\..{1,23}(?:。|[^；;]\r)/; // 23 为一行能容纳的字数
+const h2Regex = /^（[一二三四五六七八九十]+）.{1,23}?(?:。|[^；;]\r)/;
+const h3Regex = /^[0-9]{1,2}\..{1,23}?(?:。|[^；;]\r)/; // 23 为一行能容纳的字数
 const topicRegex = /(?<=^|[。？！])[一二三四五六七八九十][是要].*?。/g; // 小标题
 const topicPrefixRegex = /^[一二三四五六七八九十][是要]/;
 const dateRegex = /^[0-9X]{4}年[0-9 X]{1,2}月[0-9 X]{1,2}日\s*\r/; // 落款日期
@@ -23,6 +19,11 @@ export const forbiddenSymbolsRegex = /[。；！？【】〖〗_=|{}<>#&~$^*※\
 export const attachmentWildcards = "^m附件[0-9]{1,}^p"; // 附件通配符
 export const attachmentListRegex = /[ \u3000]*附件[：:]\s*([\s\S]+?)(?=[\r\n]{2}|\f|$)/g;
 export const attachmentListWildcards = "附件[:：]*^p^p";
+
+const salutationExcludeRegex = /贯彻|落实|关于|根据|如下|下列|包括|。/; // 抬头黑名单
+const salutationOrgDeptRegex =
+    /省|自治区|市|县|乡|镇|村|社区|委.*?(?:部|办)|局|工会|妇联|企业|党组织|大学/; // 抬头白名单
+const salutationEachUnitRegex = /各.*?(?:单位|部门)/;
 
 /**
  * 应用简单的字体配置
@@ -128,18 +129,15 @@ export function setupTitleStyle(
 function processSalutation(range: Wps.Range, config: TypographyConfig) {
     const text = range.Text;
 
-    // 1. 抬头黑名单
-    const excludeRegex = /贯彻|落实|关于|根据|如下|下列|。/;
-    if (excludeRegex.test(text)) return;
+    // 已知问题：使用了“拼音指南”标注的域，读取 Text 时只会截取域以前的内容，域之后的内容不会设置格式、样式
+    if (salutationExcludeRegex.test(text)) return;
 
     const words = text.split("、");
-    // 已知问题：此处使用 range.ComputeStatistics(wdStatisticLines); 会导致缩进为 0 但显示为 2
-    const regex1 = /省|自治区|市|县|乡|镇|村|社区|委.*?(?:部|办)|局|工会|妇联|企业|党组织|大学/;
-    const regex2 = /各.*?(?:单位|部门)/;
-    // 检查关键字
-    const pattern = words.some((w) => regex1.test(w) || regex2.test(w));
+    const pattern = words.some(
+        (w) => salutationOrgDeptRegex.test(w) || salutationEachUnitRegex.test(w),
+    );
 
-    // 2. 短文本（≤10个字符）且不含排除词，直接视为抬头
+    // 短文本（≤10个字符）且不含排除词，直接视为抬头
     if (!pattern) {
         if (text.length > 10) return;
     }
@@ -253,7 +251,7 @@ function applyHierarchicalStyles(
  * @param range 排版范围，不传则处理整个文档；传入则仅处理该范围内的段落
  */
 function formatGovDoc(
-    config: TypographyConfig = getDefaultConfig(),
+    config: TypographyConfig = getDefaultTypoConfig(),
     doc: Wps.Document = ActiveDocument,
     range?: Wps.Range,
 ) {
@@ -334,7 +332,6 @@ function formatGovDoc(
                     font.Size = 16;
                     font.Bold = msoFalse;
                 }
-                typographyContext.titleSeeds.push(idx + 1);
             }
         }
     }
@@ -342,28 +339,36 @@ function formatGovDoc(
 
 /**
  * 处理多行标题
- * - 从排版上下文中获取之前收集的标题种子
- * - 向上查找同样居中、字体大于三号的段落，合并为多行标题
+ * - 搜索连续的「公文标题」样式段落，比较相邻段落的字体和字号
+ * - 若字体字号一致，将前一段末尾的段落标记替换为软换行符（\r → \v）
  * @param doc 目标文档，默认为当前活动文档
  */
 function processMultiLineTitle(doc: Wps.Document = ActiveDocument) {
     const paras = doc.Paragraphs;
-    const anchors = [...typographyContext.titleSeeds];
-    for (let idx = anchors.length - 1; idx >= 0; idx--) {
-        const seed = anchors[idx];
-        let start = seed;
-        // 向上查找同样居中、字体大于三号的段落
-        while (start > 1) {
-            const prevPara = paras.Item(start - 1);
-            const isCenter = prevPara.Alignment === wdAlignParagraphCenter;
-            const isFontLarge = prevPara.Range.Font.Size > 16;
-            const isInTable = prevPara.Range.Text.includes("\x07");
-            if (isCenter && !isInTable && isFontLarge) start--;
-            else break;
-        }
-        // 替换从 start 到 seed-1 的段落（种子本身不替换）
-        for (let i = seed - 1; i >= start; i--) {
-            const rng = paras.Item(i).Range;
+    const count = paras.Count;
+    const titleStyleName = "公文标题";
+
+    for (let i = 1; i < count; i++) {
+        const currentPara = paras.Item(i);
+        const currentStyle = (currentPara.Style as Wps.Style).NameLocal;
+        if (currentStyle !== titleStyleName) continue;
+
+        const nextPara = paras.Item(i + 1);
+        const nextStyle = (nextPara.Style as Wps.Style).NameLocal;
+        if (nextStyle !== titleStyleName) continue;
+
+        const currentText = currentPara.Range.Text;
+        const isInTable = currentText.includes("\x07");
+        if (isInTable) continue;
+
+        const currentFont = currentPara.Range.Font;
+        const nextFont = nextPara.Range.Font;
+
+        if (
+            currentFont.NameFarEast === nextFont.NameFarEast &&
+            currentFont.Size === nextFont.Size
+        ) {
+            const rng = currentPara.Range;
             if (rng.Text.endsWith("\r")) rng.Text = rng.Text.slice(0, -1) + "\v";
         }
     }
@@ -421,20 +426,23 @@ function formatSignature(doc: Wps.Document = ActiveDocument) {
 }
 
 /**
- * 一键排版
- * - 根据配置，按合适的顺序排版公文各要素
- * - 应当避免涉及大量操作的函数在 vue 组件中调用，否则会有明显的延迟
+ * 快速排版文本内容
+ * - 根据预设或传入的配置，对目标文档（或选区）执行排版操作
+ * - 本函数会尽量在短时间内完成排版，适用于实时交互场景
+ * - 提示：为避免界面卡顿，请勿在 Vue 组件的主线程中直接调用涉及大量 COM 操作的函数
+ *
  * @param config 排版配置
  * @param doc 目标文档，默认为当前活动文档
  */
-export function oneClickTypography(config: TypographyConfig, doc: Wps.Document = ActiveDocument) {
+export function quickFormat(config: TypographyConfig, doc: Wps.Document = ActiveDocument) {
     const start = performance.now();
     withUndoRecord("一键排版", () => {
-        typographyContext.titleSeeds = [];
         // 排版前需要将动态编号转静态，否则编号会消失
         doc.Content.ListFormat.ConvertNumbersToText();
-        // 主排版：设置样式、查找层级标题、收集标题种子
+        // 主排版：设置样式、查找层级标题
         formatGovDoc(config, doc);
+        // 处理多行标题合并
+        processMultiLineTitle(doc);
         // 处理落款和附件
         formatSignature(doc);
         formatAttachments(doc);

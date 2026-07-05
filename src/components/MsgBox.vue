@@ -9,20 +9,21 @@
 
 <script setup lang="ts">
 import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
+import { getItem } from "@/jsa/utils/storage";
 
 const message = ref<string>("");
 
-// 从 PluginStorage 读取消息
+// 从存储读取消息
 const loadMessage = () => {
     try {
-        const rawMsg = Application.PluginStorage.getItem(STORAGE_KEYS.MESSAGE);
+        const rawMsg = getItem(STORAGE_KEYS.MESSAGE);
         if (rawMsg && rawMsg.trim() !== "") {
             message.value = rawMsg;
         } else {
             message.value = "暂无消息内容";
         }
     } catch (error) {
-        console.error("读取 PluginStorage 失败:", error);
+        console.error("读取存储失败:", error);
         message.value = "读取消息失败";
     }
 };

@@ -85,6 +85,20 @@ export interface PageLayoutOptions {
     footer?: number;
 }
 
+export interface HeaderFooterConfig {
+    header: {
+        content: string;
+        alignment: "left" | "center" | "right";
+        font: string;
+        fontSize: number;
+    };
+    pagenum: {
+        font: string;
+        fontSize: number;
+        position: "left" | "right" | "middle" | "inside" | "outside";
+    };
+}
+
 export interface GovDocConfig {
     typography: TypographyConfig;
     pageLayout: PageLayoutOptions;

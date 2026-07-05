@@ -1,3 +1,4 @@
+import { getItem, removeItem, setItem } from "@/jsa/utils/storage";
 import { getRouterUrl } from "@/utils";
 import type { RouteNamedMap } from "vue-router/auto-routes";
 
@@ -34,7 +35,7 @@ const TASK_PANE_CONFIGS: TaskPaneConfig[] = [
 
 function getPaneId(storageKey: string): number | null {
     if (paneIdCache.has(storageKey)) return paneIdCache.get(storageKey)!;
-    const stored = Application.PluginStorage.getItem(storageKey);
+    const stored = getItem(storageKey);
     if (stored) {
         const id = Number(stored);
         paneIdCache.set(storageKey, id);
@@ -45,12 +46,12 @@ function getPaneId(storageKey: string): number | null {
 
 function setPaneId(storageKey: string, id: number): void {
     paneIdCache.set(storageKey, id);
-    Application.PluginStorage.setItem(storageKey, String(id));
+    setItem(storageKey, String(id));
 }
 
 function removePaneId(storageKey: string): void {
     paneIdCache.delete(storageKey);
-    Application.PluginStorage.removeItem(storageKey);
+    removeItem(storageKey);
 }
 
 function getRoutePath(storageKey: string): keyof RouteNamedMap | undefined {
@@ -98,4 +99,19 @@ export function showTaskPane(storageKey: string): void {
     }
 
     taskPane.Visible = true;
+}
+
+export function toggleTaskPane(storageKey: string): void {
+    const paneId = getPaneId(storageKey);
+    const taskPane = paneId ? Application.GetTaskPane(paneId) : null;
+
+    if (taskPane) {
+        if (taskPane.Visible) {
+            taskPane.Visible = false;
+        } else {
+            showTaskPane(storageKey);
+        }
+    } else {
+        showTaskPane(storageKey);
+    }
 }

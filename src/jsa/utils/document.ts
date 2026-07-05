@@ -1,3 +1,7 @@
+import type { GovDocConfig } from "@/jsa/types";
+
+import { getItem, setItem } from "./storage";
+
 /**
  * 正则查找处理
  *
@@ -69,8 +73,7 @@ export function showFolderPicker(
     const doc = ActiveDocument;
     let folderDialog = Application.FileDialog(msoFileDialogFolderPicker);
 
-    // 从 PluginStorage 读取上次保存的文件夹路径
-    let lastPath = Application.PluginStorage.getItem("LastSelectedFolder");
+    let lastPath = getItem("LastSelectedFolder");
     let initialPath: string;
 
     if (!!lastPath) {
@@ -89,8 +92,7 @@ export function showFolderPicker(
         return null;
     }
     let selectedPath = folderDialog.SelectedItems.Item(1);
-    // 将选中的路径存入 PluginStorage，供下次使用
-    Application.PluginStorage.setItem("LastSelectedFolder", selectedPath);
+    setItem("LastSelectedFolder", selectedPath);
     return selectedPath;
 }
 
@@ -134,6 +136,22 @@ export function loadConfigLocal(): string | null {
     const configPath = configFolderPath + CONFIG_FILE_NAME;
     if (fs.Exists(configPath)) {
         return fs.ReadFile(configPath);
+    }
+    return null;
+}
+
+export function saveGovDocConfigToFile(config: GovDocConfig) {
+    return saveConfigLocal(JSON.stringify(config, null, 4));
+}
+
+export function loadGovDocConfigFromFile(): GovDocConfig | null {
+    const content = loadConfigLocal();
+    if (content) {
+        try {
+            return JSON.parse(content) as GovDocConfig;
+        } catch (e) {
+            console.error("解析本地配置文件失败", e);
+        }
     }
     return null;
 }

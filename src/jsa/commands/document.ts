@@ -1,6 +1,8 @@
 import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
-import type { PageLayoutOptions } from "@/types";
+import { setItem } from "@/jsa/utils/storage";
+import type { PageLayoutOptions } from "@/jsa/types";
 import { handleAttachments } from "@/utils";
+
 import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
 
 /**
@@ -44,7 +46,7 @@ export function deleteNonBuiltInStyles(doc: Wps.Document = ActiveDocument) {
         }
     }
     let msg = "共删除 " + nameArr.length + " 个样式：" + nameArr.join("、");
-    Application.PluginStorage.setItem(STORAGE_KEYS.MESSAGE, msg);
+    setItem(STORAGE_KEYS.MESSAGE, msg);
 }
 
 /**

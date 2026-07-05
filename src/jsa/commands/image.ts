@@ -1,5 +1,5 @@
-import { cmToPoints } from "@/utils";
 import { showFolderPicker } from "@/jsa/utils/document";
+import { cmToPoints } from "@/utils";
 
 /**
  * 批量修改文档中所有嵌入型图片的尺寸

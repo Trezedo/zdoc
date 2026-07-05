@@ -1,19 +1,21 @@
+import { getTypoConfigWithDefault } from "@/config/typography";
 import {
-    deleteNonBuiltInStyles,
-    removeShadingBackground,
-    convertSpaceToIndent,
     convertIndentToSpace,
+    convertSpaceToIndent,
+    deleteNonBuiltInStyles,
     formatAttachments,
+    removeShadingBackground,
 } from "@/jsa/commands/document";
 import { convertNumberingToStatic } from "@/jsa/commands/field";
+import { quickFormat } from "@/jsa/commands/govDoc";
 import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
-import { oneClickTypography } from "@/jsa/commands/govDoc";
-import { getConfigWithDefault } from "@/config/typography";
-import { getRouterUrl } from "@/utils";
-import { STORAGE_KEYS, showTaskPane } from "./taskPane";
 import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
-import type { TypographyConfig } from "@/types";
-import { withUndoRecord, loadConfigLocal } from "@/jsa/utils/document";
+import { withUndoRecord } from "@/jsa/utils/document";
+import { getItem, setItem } from "@/jsa/utils/storage";
+import type { TypographyConfig } from "@/jsa/types";
+import { getRouterUrl } from "@/utils";
+
+import { STORAGE_KEYS, toggleTaskPane } from "./taskPane";
 
 interface RibbonAction {
     (): void;
@@ -21,7 +23,7 @@ interface RibbonAction {
 
 function makeFarEastStyle(fontGetter: (config: TypographyConfig) => string, size?: number) {
     return () => {
-        const config = getConfigWithDefault();
+        const config = getTypoConfigWithDefault();
         const font = Application.Selection.Font;
 
         // 获取原始的中、西文字体名称，判断是否为“使用中文字体”
@@ -51,7 +53,7 @@ function makeFarEastStyle(fontGetter: (config: TypographyConfig) => string, size
 
 function makeAsciiStyle(fontGetter: (config: TypographyConfig) => string) {
     return () => {
-        const config = getConfigWithDefault();
+        const config = getTypoConfigWithDefault();
         const font = Application.Selection.Font;
         font.NameAscii = fontGetter(config);
     };
@@ -60,10 +62,10 @@ function makeAsciiStyle(fontGetter: (config: TypographyConfig) => string) {
 const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     // 文档处理
     btnGovDocTypo: () => {
-        const config = getConfigWithDefault();
-        oneClickTypography(config);
+        const config = getTypoConfigWithDefault();
+        quickFormat(config);
     },
-    btnTypoConfig: () => showTaskPane(STORAGE_KEYS.DOC_SETTINGS_ID),
+    btnTypoConfig: () => toggleTaskPane(STORAGE_KEYS.DOC_SETTINGS_ID),
     btnImageTypo: () => withUndoRecord("排版图片", formatInlineImages),
     btnTableTypo: () => {},
     btnJustifyAttach: () => withUndoRecord("对齐附件", formatAttachments),
@@ -106,7 +108,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnFontRoman: makeAsciiStyle((c) => c.main.en || "Times New Roman"),
     btnFontAsciiToEast: () => {},
     btnLineExactly: () => {
-        const config = getConfigWithDefault();
+        const config = getTypoConfigWithDefault();
         const pf = Application.Selection.ParagraphFormat;
         withUndoRecord("", () => {
             pf.LineSpacingRule = wdLineSpaceExactly;
@@ -144,7 +146,11 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnNumberToStatic: convertNumberingToStatic,
     btnViewMailSource: () => {
         const res = getMailMergeSourcePath();
-        setPluginStorageItem(STORAGE_KEYS.MESSAGE, res);
+        setItem(
+            STORAGE_KEYS.MESSAGE,
+            res.error ||
+                `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""}`,
+        );
         Application.confirm(
             res.success
                 ? `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${
@@ -164,7 +170,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     },
 
     // 图片工具
-    btnPictureResize: () => showTaskPane(STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID),
+    btnPictureResize: () => toggleTaskPane(STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID),
     btnExportPicture: exportAllImages,
 
     btnClearEmptyPara: () => {
@@ -180,15 +186,6 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     },
 };
 
-function getPluginStorageItem(key: string): boolean {
-    return !!Application.PluginStorage.getItem(key);
-}
-
-export function setPluginStorageItem<T>(key: string, value: T): void {
-    const str = JSON.stringify(value);
-    Application.PluginStorage.setItem(key, str);
-}
-
 function onAddinLoad(ribbonUI: Kso.RibbonUI): boolean {
     if (typeof Application.ribbonUI !== "object") {
         // @ts-ignore
@@ -201,16 +198,6 @@ function onAddinLoad(ribbonUI: Kso.RibbonUI): boolean {
             console.error("刷新按钮状态失败", e);
         }
     });
-
-    const localConfig = loadConfigLocal();
-    if (localConfig) {
-        try {
-            JSON.parse(localConfig);
-            Application.PluginStorage.setItem(STORAGE_KEYS.OFFICIAL_TYPOGRAPHY_CONFIG, localConfig);
-        } catch (e) {
-            console.error("解析本地配置文件失败", e);
-        }
-    }
 
     return true;
 }
@@ -244,7 +231,7 @@ function onGetEnabled(control: Kso.RibbonControl): boolean {
     switch (eleId) {
         case "btnShowDialog":
         case "btnShowTaskPane":
-            return getPluginStorageItem(STORAGE_KEYS.ENABLE_FLAG);
+            return !!getItem(STORAGE_KEYS.ENABLE_FLAG);
         default:
             return true;
     }

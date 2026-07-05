@@ -1,5 +1,5 @@
-import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
-import type { TypographyConfig } from "@/types";
+import { loadGovDocConfigFromFile } from "@/jsa/utils/document";
+import type { TypographyConfig } from "@/jsa/types";
 
 /**
  * 返回默认的公文样式配置（符合党政机关公文格式规范）
@@ -11,7 +11,7 @@ import type { TypographyConfig } from "@/types";
  *  - 三级标题：加粗
  *  - 小标题：加粗
  */
-export function getDefaultConfig(): TypographyConfig {
+export function getDefaultTypoConfig(): TypographyConfig {
     return (() => ({
         // 公文标题
         title: {
@@ -35,13 +35,9 @@ export function getDefaultConfig(): TypographyConfig {
     }))();
 }
 
-export function getConfigWithDefault(): TypographyConfig {
-    const configStr = Application.PluginStorage.getItem(STORAGE_KEYS.OFFICIAL_TYPOGRAPHY_CONFIG);
-    if (configStr) {
-        try {
-            const config = JSON.parse(configStr);
-            if (config) return config;
-        } catch (e) {}
-    }
-    return getDefaultConfig();
+export function getTypoConfigWithDefault(): TypographyConfig {
+    const localConfig = loadGovDocConfigFromFile();
+    if (localConfig && localConfig.typography) return localConfig.typography;
+
+    return getDefaultTypoConfig();
 }

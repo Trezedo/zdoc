@@ -1,6 +1,6 @@
-import type { App } from "vue";
 import { createDiscreteApi } from "naive-ui";
-import { throttle } from "radash"; // 直接从 radash 导入 throttle
+import { throttle } from "radash";
+import type { App } from "vue";
 
 const { message, notification } = createDiscreteApi(["message", "notification"]);
 

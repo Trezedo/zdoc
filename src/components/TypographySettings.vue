@@ -181,9 +181,9 @@
 </template>
 
 <script setup lang="ts">
-import { getDefaultConfig } from "@/config/typography";
+import { getDefaultTypoConfig } from "@/config/typography";
 import { getBrowserFonts, getWpsFonts } from "@/utils/fonts";
-import type { TypographyConfig } from "@/types";
+import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
 
@@ -285,7 +285,7 @@ const applyStyle = () => {
 };
 
 const resetToDefault = () => {
-    const def = getDefaultConfig();
+    const def = getDefaultTypoConfig();
     Object.assign(localConfig, def);
 };
 
