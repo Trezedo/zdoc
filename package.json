@@ -27,11 +27,13 @@
         "vue-router": "catalog:"
     },
     "devDependencies": {
+        "@types/diff-match-patch": "^1.0.36",
         "@types/node": "^25.9.4",
         "@vitejs/plugin-vue": "^6.0.7",
         "@vueuse/core": "^14.3.0",
         "autoprefixer": "^10.5.0",
         "chinese-number-format": "^2.0.3",
+        "diff-match-patch": "^1.0.5",
         "lefthook": "^2.1.9",
         "postcss": "^8.5.15",
         "prettier": "^3.8.4",

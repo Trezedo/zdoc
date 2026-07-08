@@ -107,6 +107,9 @@ export const xmlConfig = RibbonBuilder.create({
                         button("导出所有图片", "btnExportPicture"),
                     ],
                 ),
+                button("文本对比", "btnTextViewCompare", {
+                    size: "large",
+                }),
                 separator(),
                 menu("邮件合并", "mnuMailMerge", { imageMso: "OpenDataSource" }, [
                     button("查看数据源信息", "btnViewMailSource", { imageMso: "OpenDataSource" }),

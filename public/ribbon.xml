@@ -55,6 +55,7 @@
             <button id="btnPictureResize" label="调整图片尺寸" onAction="onAction" imageMso="PictureCrop" />
             <button id="btnExportPicture" label="导出所有图片" onAction="onAction" getImage="getImage" />
           </menu>
+          <button id="btnTextViewCompare" label="文本对比" onAction="onAction" size="large" getImage="getImage" />
           <separator />
           <menu id="mnuMailMerge" label="邮件合并" imageMso="OpenDataSource">
             <button id="btnViewMailSource" label="查看数据源信息" onAction="onAction" imageMso="OpenDataSource" />

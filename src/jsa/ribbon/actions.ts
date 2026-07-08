@@ -10,9 +10,9 @@ import { convertNumberingToStatic } from "@/jsa/commands/field";
 import { quickFormat } from "@/jsa/commands/govDoc";
 import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
 import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
+import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { getItem, setItem } from "@/jsa/utils/storage";
-import type { TypographyConfig } from "@/jsa/types";
 import { getRouterUrl } from "@/utils";
 
 import { STORAGE_KEYS, toggleTaskPane } from "./taskPane";
@@ -143,6 +143,8 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnFullHalfWidth: () => {
         Application.Dialogs.Item(wps.Enum.wdDialogFormatChangeCase).Show();
     },
+    btnTextViewCompare: () => toggleTaskPane(STORAGE_KEYS.TEXT_COMPARE_TASKPANE_ID),
+
     btnNumberToStatic: convertNumberingToStatic,
     btnViewMailSource: () => {
         const res = getMailMergeSourcePath();
@@ -222,6 +224,7 @@ function getImage(control: Kso.RibbonControl): string {
         btnRemoveShading: "DelDocBackground.svg",
         btnTypoConfig: "OfficialVersionSettings.svg",
         btnExportPicture: "ExportChartAsPicture.svg",
+        btnTextViewCompare: "ReviewCompare.svg",
     };
     return `images/${imageMap[eleId] ?? `${eleId}.png`}`;
 }
