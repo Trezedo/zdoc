@@ -12,3 +12,6 @@ components.d.ts
 # vue router 自动生成的类型声明文件
 typed-router.d.ts
 ribbon-images.d.ts
+
+# debug logs
+debug.log
