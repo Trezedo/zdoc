@@ -1,3 +1,5 @@
+import "./commands/pagenum";
+
 /**
  * 全局注册常量
  * @param name
@@ -24,19 +26,27 @@ function defineEnumRegistryArr<T extends readonly EnumKey[]>(
 const EnumRegistryArr = defineEnumRegistryArr([
     "MsoCTPDockPosition",
     "MsoFileDialogType",
+    "MsoTextOrientation",
     "MsoTriState",
     "WdCharacterWidth",
     "WdColor",
     "WdColorIndex",
+    "WdFieldType",
+    "WdHeaderFooterIndex",
     "WdInformation",
     "WdLineSpacing",
+    "WdPageNumberStyle",
     "WdParagraphAlignment",
+    "WdRelativeHorizontalPosition",
+    "WdRelativeVerticalPosition",
     "WdSelectionType",
+    "WdShapePosition",
     "WdStatistic",
     "WdStyleType",
     "WdTextureIndex",
     "WdThemeColorIndex",
     "WdWordDialog",
+    "WdWrapType",
 ]);
 
 export function setupGlobalEnum() {
