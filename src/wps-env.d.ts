@@ -40,19 +40,27 @@ declare global {
     declare const EnumRegistry = {
         MsoCTPDockPosition: Kso.MsoCTPDockPosition, // TaskPane 需要
         MsoFileDialogType: Kso.MsoFileDialogType,
+        MsoTextOrientation: Kso.MsoTextOrientation,
         MsoTriState: Kso.MsoTriState,
         WdCharacterWidth: Wps.WdCharacterWidth,
         WdColor: Wps.WdColor,
         WdColorIndex: Wps.WdColorIndex,
+        WdFieldType: Wps.WdFieldType, // 枚举较多，未单独逐项注册
+        WdHeaderFooterIndex: Wps.WdHeaderFooterIndex,
         WdInformation: Wps.WdInformation,
         WdLineSpacing: Wps.WdLineSpacing,
+        WdPageNumberStyle: Wps.WdPageNumberStyle, // 枚举较多，未单独逐项注册
         WdParagraphAlignment: Wps.WdParagraphAlignment,
+        WdRelativeHorizontalPosition: Wps.WdRelativeHorizontalPosition,
+        WdRelativeVerticalPosition: Wps.WdRelativeVerticalPosition,
         WdSelectionType: Wps.WdSelectionType,
+        WdShapePosition: Wps.WdShapePosition,
         WdStatistic: Wps.WdStatistic,
         WdStyleType: Wps.WdStyleType,
         WdTextureIndex: Wps.WdTextureIndex,
         WdThemeColorIndex: Wps.WdThemeColorIndex,
         WdWordDialog: Wps.WdWordDialog,
+        WdWrapType: Wps.WdWrapType,
     };
 
     /** 扩充 Wps.Application 接口
@@ -100,11 +108,23 @@ declare global {
     const msoTrue: -1;
     const msoFalse: 0;
 
+    const msoTextOrientationMixed = -2;
+    const msoTextOrientationHorizontal = 1;
+    const msoTextOrientationUpward = 2;
+    const msoTextOrientationDownward = 3;
+    const msoTextOrientationVerticalFarEast = 4;
+    const msoTextOrientationVertical = 5;
+    const msoTextOrientationHorizontalRotatedFarEast = 6;
+
     const wdWidthHalfWidth = 6;
     const wdWidthFullWidth = 7;
 
     const wdAuto = 0;
     const wdColorAutomatic = -16777216;
+
+    const wdHeaderFooterPrimary = 1;
+    const wdHeaderFooterFirstPage = 2;
+    const wdHeaderFooterEvenPages = 3;
 
     const wdLineSpaceSingle = 0;
     const wdLineSpace1pt5 = 1;
@@ -119,6 +139,24 @@ declare global {
     const wdAlignParagraphJustify = 3;
     const wdAlignParagraphDistribute = 4;
 
+    const wdRelativeHorizontalPositionMargin = 0;
+    const wdRelativeHorizontalPositionPage = 1;
+    const wdRelativeHorizontalPositionColumn = 2;
+    const wdRelativeHorizontalPositionCharacter = 3;
+    const wdRelativeHorizontalPositionLeftMarginArea = 4;
+    const wdRelativeHorizontalPositionRightMarginArea = 5;
+    const wdRelativeHorizontalPositionInnerMarginArea = 6;
+    const wdRelativeHorizontalPositionOuterMarginArea = 7;
+
+    const wdRelativeVerticalPositionMargin = 0;
+    const wdRelativeVerticalPositionPage = 1;
+    const wdRelativeVerticalPositionParagraph = 2;
+    const wdRelativeVerticalPositionLine = 3;
+    const wdRelativeVerticalPositionTopMarginArea = 4;
+    const wdRelativeVerticalPositionBottomMarginArea = 5;
+    const wdRelativeVerticalPositionInnerMarginArea = 6;
+    const wdRelativeVerticalPositionOuterMarginArea = 7;
+
     const wdNoSelection = 0;
     const wdSelectionIP = 1;
     const wdSelectionNormal = 2;
@@ -128,6 +166,14 @@ declare global {
     const wdSelectionBlock = 6;
     const wdSelectionInlineShape = 7;
     const wdSelectionShape = 8;
+
+    const wdShapeTop = -999999;
+    const wdShapeLeft = -999998;
+    const wdShapeBottom = -999997;
+    const wdShapeRight = -999996;
+    const wdShapeCenter = -999995;
+    const wdShapeInside = -999994;
+    const wdShapeOutside = -999993;
 
     const wdStatisticWords = 0;
     const wdStatisticLines = 1;
@@ -188,4 +234,13 @@ declare global {
     const wdInCitation = 43;
     const wdInFieldCode = 44;
     const wdInContentControl = 46;
+
+    const wdWrapSquare = 0;
+    const wdWrapTight = 1;
+    const wdWrapThrough = 2;
+    const wdWrapNone = 3;
+    const wdWrapTopBottom = 4;
+    const wdWrapBehind = 5;
+    const wdWrapFront = 3;
+    const wdWrapInline = 7;
 }

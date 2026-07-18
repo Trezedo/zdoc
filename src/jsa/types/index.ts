@@ -79,29 +79,55 @@ export interface PageLayoutOptions {
     left?: number;
     /** 右边距（厘米） */
     right?: number;
-    /** 页眉距纸张顶端距离（厘米） */
-    header?: number;
-    /** 页脚距纸张底端距离（厘米） */
-    footer?: number;
 }
 
+/**
+ * 页眉/页脚内容配置
+ * 用于定义文档页眉或页脚的文本样式及对齐方式
+ */
+export interface HeaderConfig {
+    /** 显示的文本内容 */
+    content: string;
+    /** 水平对齐方式 */
+    position: "left" | "center" | "right";
+    /** 字体名称（如 'Arial', 'Times New Roman'） */
+    font: string;
+    /** 字体大小（单位：磅） */
+    fontSize: number;
+    /** 页眉距纸张顶端距离（厘米） */
+    distance: number;
+}
+
+/**
+ * 页码配置
+ * 用于定义页码的字体样式及在页面中的位置
+ */
+export interface FooterConfig {
+    /** 字体名称 */
+    font: string;
+    /** 字体大小（单位：磅） */
+    fontSize: number;
+    /** 页码在页眉/页脚中的位置 */
+    position: "left" | "right" | "middle" | "inside" | "outside";
+    /** 页脚距纸张底端距离（厘米） */
+    distance: number;
+}
+
+/**
+ * 页眉/页脚整体配置
+ * 组合了头部内容和页码的完整配置项
+ */
 export interface HeaderFooterConfig {
-    header: {
-        content: string;
-        alignment: "left" | "center" | "right";
-        font: string;
-        fontSize: number;
-    };
-    pagenum: {
-        font: string;
-        fontSize: number;
-        position: "left" | "right" | "middle" | "inside" | "outside";
-    };
+    /** 页眉/页脚内容配置 */
+    header: HeaderConfig;
+    /** 页码配置 */
+    pagenum: FooterConfig;
 }
 
 export interface GovDocConfig {
     typography: TypographyConfig;
     pageLayout: PageLayoutOptions;
+    pagenum?: FooterConfig;
 }
 
 export interface ParaInfo {
