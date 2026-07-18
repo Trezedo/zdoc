@@ -8,3 +8,10 @@
         @apply bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden;
     }
 }
+
+@layer components {
+    /* 在这里定义你的自定义类 */
+    .card-base {
+        @apply border rounded-md shadow;
+    }
+}

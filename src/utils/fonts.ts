@@ -55,3 +55,26 @@ export async function getBrowserFonts(): Promise<[string[], string[]]> {
         return [[], []];
     }
 }
+
+const fontSizeMap: Record<number, string> = {
+    5: "八号",
+    5.5: "七号",
+    6.5: "小六",
+    7.5: "六号",
+    9: "小五",
+    10.5: "五号",
+    12: "小四",
+    14: "四号",
+    15: "小三",
+    16: "三号",
+    18: "小二",
+    22: "二号",
+    24: "小一",
+    26: "一号",
+    36: "小初",
+    42: "初号",
+};
+
+export function getChineseFontSizeName(pt: number): string {
+    return fontSizeMap[pt] || "";
+}
