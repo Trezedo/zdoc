@@ -19,6 +19,7 @@
             <button id="btnClearNonBuiltinStyles" label="删除非内置样式" onAction="onAction" imageMso="ClearStyle" />
             <button id="btnRemoveShading" label="清除底纹背景" onAction="onAction" getImage="getImage" />
           </menu>
+          <button id="btnHeaderFooter" label="页眉页脚" onAction="onAction" size="large" imageMso="HeaderFooter" />
         </group>
         <group id="grpStyle" label="快捷样式">
           <separator />

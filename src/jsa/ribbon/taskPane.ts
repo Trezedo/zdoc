@@ -11,6 +11,7 @@ export const STORAGE_KEYS = {
     PAGE_SETUP_TASKPANE_ID: "page_setup_taskpane_id",
     IMAGE_RESIZE_TASKPANE_ID: "image_resize_taskpane_id",
     TEXT_COMPARE_TASKPANE_ID: "text_compare_taskpane_id",
+    HEADER_FOOTER_TASKPANE_ID: "header_footer_taskpane_id",
     // 功能开关
     ENABLE_FLAG: "EnableFlag",
     API_EVENT_FLAG: "ApiEventFlag",
@@ -33,6 +34,7 @@ const TASK_PANE_CONFIGS: TaskPaneConfig[] = [
     { storageKey: STORAGE_KEYS.DOC_SETTINGS_ID, routePath: "/settings" },
     { storageKey: STORAGE_KEYS.IMAGE_RESIZE_TASKPANE_ID, routePath: "/image-resize" },
     { storageKey: STORAGE_KEYS.TEXT_COMPARE_TASKPANE_ID, routePath: "/text-compare" },
+    { storageKey: STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID, routePath: "/header-footer" },
 ];
 
 function getPaneId(storageKey: string): number | null {

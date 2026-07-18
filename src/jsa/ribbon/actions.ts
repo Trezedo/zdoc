@@ -93,6 +93,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
         );
     },
     btnRemoveShading: () => withUndoRecord("清除底纹背景", removeShadingBackground),
+    btnHeaderFooter: () => toggleTaskPane(STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID),
 
     // 快捷样式
     btnFontSize2: () => {

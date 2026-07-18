@@ -44,6 +44,10 @@ export const xmlConfig = RibbonBuilder.create({
                     }),
                     button("清除底纹背景", "btnRemoveShading"),
                 ]),
+                button("页眉页脚", "btnHeaderFooter", {
+                    imageMso: "HeaderFooter",
+                    size: "large",
+                }),
             ]),
             group("快捷样式", "grpStyle", [
                 separator(),
