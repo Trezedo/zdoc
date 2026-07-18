@@ -182,7 +182,7 @@
 
 <script setup lang="ts">
 import { getDefaultTypoConfig } from "@/config/typography";
-import { getBrowserFonts, getWpsFonts } from "@/utils/fonts";
+import { getBrowserFonts, getWpsFonts, getChineseFontSizeName } from "@/utils";
 import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
@@ -239,29 +239,6 @@ const mainWesternOptions = computed(() => [
     { label: "随中文：" + localConfig.main.zh, value: localConfig.main.zh },
     ...rawWesternOptions.value,
 ]);
-
-const fontSizeMap: Record<number, string> = {
-    5: "八号",
-    5.5: "七号",
-    6.5: "小六",
-    7.5: "六号",
-    9: "小五",
-    10.5: "五号",
-    12: "小四",
-    14: "四号",
-    15: "小三",
-    16: "三号",
-    18: "小二",
-    22: "二号",
-    24: "小一",
-    26: "一号",
-    36: "小初",
-    42: "初号",
-};
-
-const getChineseFontSizeName = (pt: number): string => {
-    return fontSizeMap[pt] || "";
-};
 
 watch(
     () => localConfig.title.zh,

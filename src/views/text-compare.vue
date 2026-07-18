@@ -9,28 +9,49 @@
                 <n-collapse :default-expanded-names="['input', 'config']" :accordion="false">
                     <!-- 配置面板：grid 两列均分，窄屏自动折叠 -->
                     <n-collapse-item name="config" title="⚙️ 对比配置">
-                        <div class="grid grid-cols-1 min-[400px]:grid-cols-2 gap-4 items-start">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-600 mb-1">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-center justify-between gap-2">
+                                <label class="text-sm font-medium text-gray-700 whitespace-nowrap">
                                     对比模式
                                 </label>
-                                <n-select v-model:value="cleanupMode" :options="cleanupOptions" />
+                                <div class="flex flex-1 items-center gap-1">
+                                    <n-select
+                                        v-model:value="cleanupMode"
+                                        :options="cleanupOptions"
+                                        class="flex-1"
+                                    />
+                                </div>
                             </div>
-                            <div v-if="cleanupMode === 'efficiency'">
-                                <label class="block text-sm font-medium text-gray-600 mb-1">
-                                    差异精度
-                                    <span class="text-xs text-gray-400 font-normal">
-                                        （决定差异块长度）
-                                    </span>
-                                </label>
 
-                                <n-input-number
-                                    v-model:value="editCost"
-                                    :min="1"
-                                    :step="1"
-                                    v-wheel-change="1"
-                                    class="w-full"
-                                />
+                            <div
+                                v-if="cleanupMode === 'efficiency'"
+                                class="flex items-center justify-between gap-2"
+                            >
+                                <label
+                                    class="text-sm font-medium text-gray-700 whitespace-nowrap flex items-center gap-1"
+                                >
+                                    差异精度
+                                    <n-tooltip trigger="hover" placement="top">
+                                        <template #trigger>
+                                            <span
+                                                class="text-xs text-gray-400 font-normal cursor-help border-b border-dashed border-gray-300"
+                                            >
+                                                🛈
+                                            </span>
+                                        </template>
+                                        值越大，差异块长度越大
+                                    </n-tooltip>
+                                </label>
+                                <div class="flex flex-1 items-center gap-1">
+                                    <n-input-number
+                                        v-model:value="editCost"
+                                        :min="1"
+                                        :step="1"
+                                        size="medium"
+                                        class="flex-1"
+                                        v-wheel-change
+                                    />
+                                </div>
                             </div>
                         </div>
                     </n-collapse-item>
@@ -44,7 +65,7 @@
                                 <n-input
                                     v-model:value="oldText"
                                     type="textarea"
-                                    :autosize="{ minRows: 6, maxRows: 12 }"
+                                    :autosize="{ minRows: 8, maxRows: 8 }"
                                     placeholder="请输入旧文本（原始版本）"
                                 />
                             </div>
@@ -55,7 +76,7 @@
                                 <n-input
                                     v-model:value="newText"
                                     type="textarea"
-                                    :autosize="{ minRows: 6, maxRows: 12 }"
+                                    :autosize="{ minRows: 8, maxRows: 8 }"
                                     placeholder="请输入新文本（修订版本）"
                                 />
                             </div>
@@ -65,6 +86,9 @@
 
                 <!-- 对比结果 -->
                 <div class="mt-4">
+                    <div v-if="duration > 0" class="text-left text-sm text-gray-500 mb-2 pl-2">
+                        ⏱️ 对比耗时：{{ formattedDuration }}
+                    </div>
                     <TextDiff
                         :old-text="oldText"
                         :new-text="newText"
@@ -72,9 +96,6 @@
                         :edit-cost="editCost"
                         @update:duration="onDurationUpdate"
                     />
-                    <div v-if="duration > 0" class="text-right text-sm text-gray-500 mt-2 pr-2">
-                        ⏱️ 对比耗时：{{ duration.toFixed(2) }} ms
-                    </div>
                 </div>
             </div>
         </n-scrollbar>
@@ -101,13 +122,14 @@ const EXAMPLE_NEW = `会议指出，各相关部门要切实提高政治站位�
 
 const oldText = ref("");
 const newText = ref("");
-const cleanupMode = ref<"efficiency" | "semantic" | "none">("efficiency");
+const cleanupMode = ref<"semantic" | "efficiency" | "none">("semantic");
 const editCost = ref(4);
 const duration = ref(0);
 
+// 长句差异用语义优化效果较好
 const cleanupOptions = [
-    { label: "效率优化", value: "efficiency" },
     { label: "语义优化", value: "semantic" },
+    { label: "效率优化", value: "efficiency" },
     { label: "原始输出", value: "none" },
 ];
 
@@ -128,6 +150,14 @@ function clearText() {
 function onDurationUpdate(ms: number) {
     duration.value = ms;
 }
+
+const formattedDuration = computed(() => {
+    if (duration.value === 0) return "";
+    if (duration.value >= 1000) {
+        return `${(duration.value / 1000).toFixed(2)} s`;
+    }
+    return `${duration.value.toFixed(2)} ms`;
+});
 </script>
 
 <style scoped></style>

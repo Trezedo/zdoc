@@ -55,12 +55,10 @@ const defaultPageLayout = {
     footer: 2.4,
 };
 
-const config = reactive<GovDocConfig>({
-    typography: getDefaultTypoConfig(),
-    pageLayout: { ...defaultPageLayout },
-});
+type LocalConfig = Omit<GovDocConfig, "pagenum">;
+const config = reactive<LocalConfig>(getDefaultConfigFull());
 
-function getDefaultConfigFull(): GovDocConfig {
+function getDefaultConfigFull(): LocalConfig {
     return {
         typography: getDefaultTypoConfig(),
         pageLayout: { ...defaultPageLayout },
@@ -113,7 +111,7 @@ function importConfig() {
     loadConfig();
 }
 
-function applyAll() {
+async function applyAll() {
     typographyRef.value?.applyStyle();
     pageRef.value?.applyMargins();
     message.info("所有设置已应用");

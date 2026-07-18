@@ -56,34 +56,6 @@
                 <span class="text-sm text-gray-400">cm</span>
             </div>
         </div>
-        <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">页眉距离</label>
-            <div class="flex flex-1 items-center gap-1">
-                <n-input-number
-                    v-model:value="localConfig.header"
-                    :min="0"
-                    :step="0.1"
-                    size="medium"
-                    class="flex-1"
-                    v-wheel-change
-                />
-                <span class="text-sm text-gray-400">cm</span>
-            </div>
-        </div>
-        <div class="flex items-center justify-between gap-2">
-            <label class="text-sm font-medium text-gray-700">页脚距离</label>
-            <div class="flex flex-1 items-center gap-1">
-                <n-input-number
-                    v-model:value="localConfig.footer"
-                    :min="0"
-                    :step="0.1"
-                    size="medium"
-                    class="flex-1"
-                    v-wheel-change
-                />
-                <span class="text-sm text-gray-400">cm</span>
-            </div>
-        </div>
     </div>
 </template>
 
@@ -100,12 +72,10 @@ const emit = defineEmits<{
 }>();
 
 const localConfig = reactive<PageLayoutOptions>({
-    header: 1.5,
     top: 3.7,
     left: 2.8,
     right: 2.6,
     bottom: 3.5,
-    footer: 2.4,
     ...props.modelValue,
 });
 
@@ -126,12 +96,10 @@ watch(
 );
 
 const resetToDefault = () => {
-    localConfig.header = 1.5;
     localConfig.top = 3.7;
     localConfig.left = 2.8;
     localConfig.right = 2.6;
     localConfig.bottom = 3.5;
-    localConfig.footer = 2.4;
 };
 
 const applyMargins = () => {
