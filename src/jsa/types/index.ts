@@ -6,7 +6,7 @@ export interface TitleConfig {
     /**
      * 西文字体，如 "Times New Roman" 等
      */
-    en?: string;
+    en: string;
     /**
      * 字号磅值，如 16 对应 "三号"
      */
@@ -25,8 +25,8 @@ export interface MainConfig extends TitleConfig {
 }
 
 export interface SimpleFontConfig {
-    font?: string; // 字体名称
-    bold?: boolean; // 是否加粗，可选
+    font: string; // 字体名称
+    bold: boolean; // 是否加粗，可选
 }
 
 /**
@@ -35,9 +35,8 @@ export interface SimpleFontConfig {
  * - `auto`: 默认整句加粗，内容较长时按 "prefix" 模式处理
  * - `prefix`: 仅加粗段首的 2-3 个字（如"一是"、"二是"）
  * - `none`: 不加粗
- * - 未定义时（undefined）等同于 "auto"
  */
-export type TopicBoldMode = "auto" | "prefix" | "none" | undefined;
+export type TopicBoldMode = "auto" | "prefix" | "none";
 
 /**
  * 完整排版配置
@@ -70,15 +69,15 @@ export interface TypographyConfig {
     topicBoldMode: TopicBoldMode;
 }
 
-export interface PageLayoutOptions {
+export interface PageLayoutConfig {
     /** 上边距（厘米） */
-    top?: number;
+    top: number;
     /** 下边距（厘米） */
-    bottom?: number;
+    bottom: number;
     /** 左边距（厘米） */
-    left?: number;
+    left: number;
     /** 右边距（厘米） */
-    right?: number;
+    right: number;
 }
 
 /**
@@ -126,7 +125,7 @@ export interface HeaderFooterConfig {
 
 export interface GovDocConfig {
     typography: TypographyConfig;
-    pageLayout: PageLayoutOptions;
+    pageLayout: PageLayoutConfig;
     pagenum?: FooterConfig;
 }
 

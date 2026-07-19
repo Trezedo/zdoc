@@ -1,5 +1,5 @@
-import { loadGovDocConfigFromFile } from "@/jsa/utils/document";
 import type { TypographyConfig } from "@/jsa/types";
+import { loadGovDocConfigFromFile } from "@/jsa/utils/document";
 
 /**
  * 返回默认的公文样式配置（符合党政机关公文格式规范）
@@ -15,8 +15,8 @@ export function getDefaultTypoConfig(): TypographyConfig {
     return (() => ({
         // 公文标题
         title: {
-            zh: "方正小标宋简体",
-            en: "方正小标宋简体",
+            zh: "方正小标宋_GBK",
+            en: "方正小标宋_GBK",
             size: 22, // 二号
             spacing: 28.95,
         },
