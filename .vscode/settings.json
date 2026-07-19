@@ -5,6 +5,12 @@
     "material-icon-theme.folders.associations": {
         "jsa": "javascript"
     },
+    // 关掉插件自带的“保存时自动格式化”，避免和 Prettier 抢顺序
+    // 通过快捷键 Alt+Shift+S 手动格式化 import 导入
+    "tsImportSorter.configuration.autoFormat": "off",
+    "editor.codeActionsOnSave": {
+        "source.fixAll.prettier": "explicit"
+    },
     "cSpell.words": [
         "addin",
         "esbuild",
