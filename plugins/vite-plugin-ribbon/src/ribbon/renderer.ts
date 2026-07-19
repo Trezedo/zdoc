@@ -22,6 +22,46 @@ function renderAttributes(attrs: Record<string, any>): string {
         .join(" ");
 }
 
+type BaseControl = {
+    id: string;
+    label?: string;
+    size?: string;
+    getImage?: string;
+    imageMso?: string;
+    screentip?: string;
+    supertip?: string;
+    keytip?: string;
+    tag?: string;
+    getVisible?: string;
+    visible?: boolean;
+    getEnabled?: string;
+    enabled?: boolean;
+    showImage?: boolean;
+    showLabel?: boolean;
+    getLabel?: string;
+};
+
+function getBaseAttrs<T extends BaseControl>(ctrl: T): Record<string, any> {
+    return {
+        id: ctrl.id,
+        label: ctrl.label,
+        size: ctrl.size,
+        getImage: ctrl.imageMso ? "" : ctrl.getImage,
+        imageMso: ctrl.imageMso,
+        screentip: ctrl.screentip,
+        supertip: ctrl.supertip,
+        keytip: ctrl.keytip,
+        tag: ctrl.tag,
+        getVisible: ctrl.getVisible,
+        visible: ctrl.visible,
+        getEnabled: ctrl.getEnabled,
+        enabled: ctrl.enabled,
+        showImage: ctrl.showImage,
+        showLabel: ctrl.showLabel,
+        getLabel: ctrl.getLabel,
+    };
+}
+
 function renderTab(tab: Tab, indent: string): string {
     const attrs: Record<string, any> = {
         id: tab.id,
@@ -71,125 +111,50 @@ function renderGroup(group: Group, indent: string): string {
 }
 
 function renderButton(btn: Button, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: btn.id,
-        label: btn.label,
+    const attrs = {
+        ...getBaseAttrs(btn),
         onAction: btn.onAction ?? "onAction",
-        size: btn.size,
-        getImage: btn.imageMso ? "" : (btn.getImage ?? "getImage"),
-        imageMso: btn.imageMso,
-        screentip: btn.screentip,
-        supertip: btn.supertip,
-        keytip: btn.keytip,
-        tag: btn.tag,
-        getVisible: btn.getVisible,
-        visible: btn.visible,
-        getEnabled: btn.getEnabled,
-        enabled: btn.enabled,
-        showImage: btn.showImage,
-        showLabel: btn.showLabel,
-        getLabel: btn.getLabel,
     };
     return `${indent}<button ${renderAttributes(attrs)} />`;
 }
 
 function renderCheckBox(cb: CheckBox, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: cb.id,
-        label: cb.label,
+    const attrs = {
+        ...getBaseAttrs(cb),
         onAction: cb.onAction ?? "onAction",
-        size: cb.size,
-        getImage: cb.imageMso ? "" : cb.getImage,
-        imageMso: cb.imageMso,
-        screentip: cb.screentip,
-        supertip: cb.supertip,
-        keytip: cb.keytip,
-        tag: cb.tag,
-        getVisible: cb.getVisible,
-        visible: cb.visible,
-        getEnabled: cb.getEnabled,
-        enabled: cb.enabled,
-        showImage: cb.showImage,
-        showLabel: cb.showLabel,
         getPressed: cb.getPressed,
         pressed: cb.pressed,
-        getLabel: cb.getLabel,
     };
     return `${indent}<checkBox ${renderAttributes(attrs)} />`;
 }
 
 function renderToggleButton(tb: ToggleButton, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: tb.id,
-        label: tb.label,
+    const attrs = {
+        ...getBaseAttrs(tb),
         onAction: tb.onAction ?? "onAction",
-        size: tb.size,
-        getImage: tb.imageMso ? "" : tb.getImage,
-        imageMso: tb.imageMso,
-        screentip: tb.screentip,
-        supertip: tb.supertip,
-        keytip: tb.keytip,
-        tag: tb.tag,
-        getVisible: tb.getVisible,
-        visible: tb.visible,
-        getEnabled: tb.getEnabled,
-        enabled: tb.enabled,
-        showImage: tb.showImage,
-        showLabel: tb.showLabel,
         getPressed: tb.getPressed,
         pressed: tb.pressed,
-        getLabel: tb.getLabel,
     };
     return `${indent}<toggleButton ${renderAttributes(attrs)} />`;
 }
 
 function renderEditBox(eb: EditBox, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: eb.id,
-        label: eb.label,
+    const attrs = {
+        ...getBaseAttrs(eb),
         onChange: eb.onChange ?? "onChange",
         getText: eb.getText ?? "getText",
         text: eb.text,
-        size: eb.size,
-        getImage: eb.imageMso ? "" : eb.getImage,
-        imageMso: eb.imageMso,
-        screentip: eb.screentip,
-        supertip: eb.supertip,
-        keytip: eb.keytip,
-        tag: eb.tag,
-        getVisible: eb.getVisible,
-        visible: eb.visible,
-        getEnabled: eb.getEnabled,
-        enabled: eb.enabled,
-        showImage: eb.showImage,
-        showLabel: eb.showLabel,
-        getLabel: eb.getLabel,
         maxLength: eb.maxLength,
     };
     return `${indent}<editBox ${renderAttributes(attrs)} />`;
 }
 
 function renderComboBox(cb: ComboBox, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: cb.id,
-        label: cb.label,
+    const attrs = {
+        ...getBaseAttrs(cb),
         onChange: cb.onChange ?? "onChange",
         getText: cb.getText ?? "getText",
         text: cb.text,
-        size: cb.size,
-        getImage: cb.imageMso ? "" : cb.getImage,
-        imageMso: cb.imageMso,
-        screentip: cb.screentip,
-        supertip: cb.supertip,
-        keytip: cb.keytip,
-        tag: cb.tag,
-        getVisible: cb.getVisible,
-        visible: cb.visible,
-        getEnabled: cb.getEnabled,
-        enabled: cb.enabled,
-        showImage: cb.showImage,
-        showLabel: cb.showLabel,
-        getLabel: cb.getLabel,
         getItemCount: cb.getItemCount ?? "getItemCount",
         getItemLabel: cb.getItemLabel ?? "getItemLabel",
         getItemID: cb.getItemID ?? "getItemID",
@@ -205,24 +170,9 @@ function renderComboBox(cb: ComboBox, indent: string): string {
 }
 
 function renderDropDown(dd: DropDown, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: dd.id,
-        label: dd.label,
+    const attrs = {
+        ...getBaseAttrs(dd),
         onChange: dd.onChange ?? "onChange",
-        size: dd.size,
-        getImage: dd.imageMso ? "" : dd.getImage,
-        imageMso: dd.imageMso,
-        screentip: dd.screentip,
-        supertip: dd.supertip,
-        keytip: dd.keytip,
-        tag: dd.tag,
-        getVisible: dd.getVisible,
-        visible: dd.visible,
-        getEnabled: dd.getEnabled,
-        enabled: dd.enabled,
-        showImage: dd.showImage,
-        showLabel: dd.showLabel,
-        getLabel: dd.getLabel,
         getItemCount: dd.getItemCount ?? "getItemCount",
         getItemLabel: dd.getItemLabel ?? "getItemLabel",
         getItemID: dd.getItemID ?? "getItemID",
@@ -249,24 +199,9 @@ function renderLabelControl(lc: LabelControl, indent: string): string {
 }
 
 function renderMenu(menu: Menu, indent: string): string {
-    const attrs: Record<string, any> = {
-        id: menu.id,
-        label: menu.label,
-        size: menu.size,
-        getImage: menu.imageMso ? "" : (menu.getImage ?? "getImage"),
-        imageMso: menu.imageMso,
-        screentip: menu.screentip,
-        supertip: menu.supertip,
-        keytip: menu.keytip,
-        tag: menu.tag,
-        getVisible: menu.getVisible,
-        visible: menu.visible,
-        getEnabled: menu.getEnabled,
-        enabled: menu.enabled,
-        showImage: menu.showImage,
-        showLabel: menu.showLabel,
+    const attrs = {
+        ...getBaseAttrs(menu),
         getDescription: menu.getDescription,
-        getLabel: menu.getLabel,
     };
     let xml = `${indent}<menu ${renderAttributes(attrs)}>\n`;
     for (const item of menu.items) {
@@ -288,7 +223,7 @@ function renderMenu(menu: Menu, indent: string): string {
 }
 
 function renderSplitButton(sb: SplitButton, indent: string): string {
-    const attrs: Record<string, any> = {
+    const attrs = {
         id: sb.id,
         size: sb.size,
         getImage: sb.imageMso ? "" : sb.getImage,

@@ -34,6 +34,7 @@ export const xmlConfig = RibbonBuilder.create({
                 button("排版设置", "btnTypoConfig", {
                     // imageMso: "MoreMarginsOption",
                     size: "large",
+                    getImage: "getImage",
                 }),
                 menu("清除格式", "mnuClear", { size: "large", imageMso: "ClearAll" }, [
                     button("清除格式（选区/全文）", "btnClearFormat", {
@@ -42,7 +43,9 @@ export const xmlConfig = RibbonBuilder.create({
                     button("删除非内置样式", "btnClearNonBuiltinStyles", {
                         imageMso: "ClearStyle",
                     }),
-                    button("清除底纹背景", "btnRemoveShading"),
+                    button("清除底纹背景", "btnRemoveShading", {
+                        getImage: "getImage",
+                    }),
                 ]),
                 button("页眉页脚", "btnHeaderFooter", {
                     imageMso: "HeaderFooter",
@@ -108,11 +111,14 @@ export const xmlConfig = RibbonBuilder.create({
                         button("调整图片尺寸", "btnPictureResize", {
                             imageMso: "PictureCrop",
                         }),
-                        button("导出所有图片", "btnExportPicture"),
+                        button("导出所有图片", "btnExportPicture", {
+                            getImage: "getImage",
+                        }),
                     ],
                 ),
                 button("文本对比", "btnTextViewCompare", {
                     size: "large",
+                    getImage: "getImage",
                 }),
                 separator(),
                 menu("邮件合并", "mnuMailMerge", { imageMso: "OpenDataSource" }, [

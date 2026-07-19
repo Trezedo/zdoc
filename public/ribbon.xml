@@ -5,70 +5,70 @@
       <tab id="wpsDocHelperTab" label="公文助手(&amp;Z)">
         <group id="grpDocument" label="文档处理">
           <splitButton id="sb排版" size="large" supertip="适用于对文字内容快速调整格式">
-            <button id="btnGovDocTypo" label="快速排版" onAction="onAction" imageMso="TextStyle" />
-            <menu id="menu1" label="排版菜单" getImage="getImage">
-              <button id="btnImageTypo" label="排版图片" onAction="onAction" imageMso="GeneratePicture" />
-              <button id="btnTableTypo" label="排版表格" onAction="onAction" imageMso="AiSmartOrganize" />
-              <button id="btnJustifyAttach" label="附件对齐" onAction="onAction" imageMso="OfficialAttachmentList" />
-              <button id="btnBatchTypo" label="批量排版" onAction="onAction" imageMso="SmartRearrange" />
+            <button id="btnGovDocTypo" label="快速排版" imageMso="TextStyle" onAction="onAction" />
+            <menu id="menu1" label="排版菜单">
+              <button id="btnImageTypo" label="排版图片" imageMso="GeneratePicture" onAction="onAction" />
+              <button id="btnTableTypo" label="排版表格" imageMso="AiSmartOrganize" onAction="onAction" />
+              <button id="btnJustifyAttach" label="附件对齐" imageMso="OfficialAttachmentList" onAction="onAction" />
+              <button id="btnBatchTypo" label="批量排版" imageMso="SmartRearrange" onAction="onAction" />
             </menu>
           </splitButton>
-          <button id="btnTypoConfig" label="排版设置" onAction="onAction" size="large" getImage="getImage" />
+          <button id="btnTypoConfig" label="排版设置" size="large" getImage="getImage" onAction="onAction" />
           <menu id="mnuClear" label="清除格式" size="large" imageMso="ClearAll">
-            <button id="btnClearFormat" label="清除格式（选区/全文）" onAction="onAction" imageMso="ClearFormats" />
-            <button id="btnClearNonBuiltinStyles" label="删除非内置样式" onAction="onAction" imageMso="ClearStyle" />
-            <button id="btnRemoveShading" label="清除底纹背景" onAction="onAction" getImage="getImage" />
+            <button id="btnClearFormat" label="清除格式（选区/全文）" imageMso="ClearFormats" onAction="onAction" />
+            <button id="btnClearNonBuiltinStyles" label="删除非内置样式" imageMso="ClearStyle" onAction="onAction" />
+            <button id="btnRemoveShading" label="清除底纹背景" getImage="getImage" onAction="onAction" />
           </menu>
-          <button id="btnHeaderFooter" label="页眉页脚" onAction="onAction" size="large" imageMso="HeaderFooter" />
+          <button id="btnHeaderFooter" label="页眉页脚" size="large" imageMso="HeaderFooter" onAction="onAction" />
         </group>
         <group id="grpStyle" label="快捷样式">
           <separator />
-          <button id="btnFontSize2" label="二号" onAction="onAction" imageMso="FontSize" />
-          <button id="btnFontSize3" label="三号" onAction="onAction" imageMso="FontSize" />
+          <button id="btnFontSize2" label="二号" imageMso="FontSize" onAction="onAction" />
+          <button id="btnFontSize3" label="三号" imageMso="FontSize" onAction="onAction" />
           <separator />
-          <button id="btnFontFZ" label="小标宋" onAction="onAction" imageMso="ReplaceFont" supertip="对应排版设置中
-“标题”的中文字体" />
-          <button id="btnFontHei" label="黑体" onAction="onAction" imageMso="ReplaceFont" supertip="对应排版设置中
-“一级标题”的字体" />
-          <button id="btnFontKai" label="楷体" onAction="onAction" imageMso="ReplaceFont" supertip="对应排版设置中
-“二级标题”的字体" />
-          <button id="btnFontFS" label="仿宋" onAction="onAction" imageMso="ReplaceFont" supertip="对应排版设置中
-“正文”的中文字体" />
-          <button id="btnFontRoman" label="西文罗马体" onAction="onAction" imageMso="ReplaceFont" supertip="西文设为“Times New Roman”
-或“Nimbus Roman”字体" />
-          <button id="btnFontAsciiToEast" label="西文同中文" onAction="onAction" imageMso="ReplaceFont" supertip="西文使用中文字体" />
-          <button id="btnLineExactly" label="固定行距" onAction="onAction" imageMso="LineSpacing" />
+          <button id="btnFontFZ" label="小标宋" imageMso="ReplaceFont" supertip="对应排版设置中
+“标题”的中文字体" onAction="onAction" />
+          <button id="btnFontHei" label="黑体" imageMso="ReplaceFont" supertip="对应排版设置中
+“一级标题”的字体" onAction="onAction" />
+          <button id="btnFontKai" label="楷体" imageMso="ReplaceFont" supertip="对应排版设置中
+“二级标题”的字体" onAction="onAction" />
+          <button id="btnFontFS" label="仿宋" imageMso="ReplaceFont" supertip="对应排版设置中
+“正文”的中文字体" onAction="onAction" />
+          <button id="btnFontRoman" label="西文罗马体" imageMso="ReplaceFont" supertip="西文设为“Times New Roman”
+或“Nimbus Roman”字体" onAction="onAction" />
+          <button id="btnFontAsciiToEast" label="西文同中文" imageMso="ReplaceFont" supertip="西文使用中文字体" onAction="onAction" />
+          <button id="btnLineExactly" label="固定行距" imageMso="LineSpacing" onAction="onAction" />
           <separator />
         </group>
         <group id="grpHelper" label="辅助">
           <menu id="mnuIndent" label="段落缩进" size="large" imageMso="IncreaseIndent">
-            <button id="btnIndent2Char" label="首行缩进2字" onAction="onAction" imageMso="ParagraphIndent2Spaces" />
-            <button id="btnClearIndent" label="取消缩进" onAction="onAction" imageMso="DeletePrefixSpaces" />
+            <button id="btnIndent2Char" label="首行缩进2字" imageMso="ParagraphIndent2Spaces" onAction="onAction" />
+            <button id="btnClearIndent" label="取消缩进" imageMso="DeletePrefixSpaces" onAction="onAction" />
             <menuSeparator id="msIndent" />
-            <button id="btnToggleIndentToSpace" label="空格 ↔️ 缩进" onAction="onAction" imageMso="InsertParagraphIndent" />
+            <button id="btnToggleIndentToSpace" label="空格 ↔️ 缩进" imageMso="InsertParagraphIndent" onAction="onAction" />
           </menu>
           <menu id="mnuListOrder" label="编号转换" size="large" imageMso="InsertNumber">
-            <button id="btnNumberToStatic" label="动态编号转静态" onAction="onAction" size="large" imageMso="Numbering" />
-            <button id="btnH1ToNumber" label="一级标题序号转动态" onAction="onAction" imageMso="_1" />
-            <button id="btnH2ToNumber" label="二级标题序号转动态" onAction="onAction" imageMso="_2" />
+            <button id="btnNumberToStatic" label="动态编号转静态" size="large" imageMso="Numbering" onAction="onAction" />
+            <button id="btnH1ToNumber" label="一级标题序号转动态" imageMso="_1" onAction="onAction" />
+            <button id="btnH2ToNumber" label="二级标题序号转动态" imageMso="_2" onAction="onAction" />
           </menu>
           <menu id="mnuPictureTools" label="图片工具" size="large" imageMso="BatchInsertPicture">
-            <button id="btnPictureResize" label="调整图片尺寸" onAction="onAction" imageMso="PictureCrop" />
-            <button id="btnExportPicture" label="导出所有图片" onAction="onAction" getImage="getImage" />
+            <button id="btnPictureResize" label="调整图片尺寸" imageMso="PictureCrop" onAction="onAction" />
+            <button id="btnExportPicture" label="导出所有图片" getImage="getImage" onAction="onAction" />
           </menu>
-          <button id="btnTextViewCompare" label="文本对比" onAction="onAction" size="large" getImage="getImage" />
+          <button id="btnTextViewCompare" label="文本对比" size="large" getImage="getImage" onAction="onAction" />
           <separator />
           <menu id="mnuMailMerge" label="邮件合并" imageMso="OpenDataSource">
-            <button id="btnViewMailSource" label="查看数据源信息" onAction="onAction" imageMso="OpenDataSource" />
-            <button id="btnUpdateFiled" label="更新所有域" onAction="onAction" imageMso="UpdateField" />
+            <button id="btnViewMailSource" label="查看数据源信息" imageMso="OpenDataSource" onAction="onAction" />
+            <button id="btnUpdateFiled" label="更新所有域" imageMso="UpdateField" onAction="onAction" />
           </menu>
-          <button id="btnClearEmptyPara" label="清除空段落" onAction="onAction" imageMso="DeleteBlankParagraph" />
-          <button id="btnRegexReplace" label="正则替换" onAction="onAction" imageMso="Replace" />
-          <button id="btnFullHalfWidth" label="标点全半角转换" onAction="onAction" imageMso="ChangeCase" />
+          <button id="btnClearEmptyPara" label="清除空段落" imageMso="DeleteBlankParagraph" onAction="onAction" />
+          <button id="btnRegexReplace" label="正则替换" imageMso="Replace" onAction="onAction" />
+          <button id="btnFullHalfWidth" label="标点全半角转换" imageMso="ChangeCase" onAction="onAction" />
         </group>
         <group id="grp222" label="其他">
           <menu id="mnu修订" label="修订" imageMso="TrackChanges">
-            <button id="btn接受所有修订" label="一键接受" onAction="onAction" imageMso="AcceptChange" />
+            <button id="btn接受所有修订" label="一键接受" imageMso="AcceptChange" onAction="onAction" />
           </menu>
         </group>
       </tab>

@@ -17,6 +17,27 @@ import type {
     ToggleButton,
 } from "../common/typings.js";
 
+type BaseControlOptions = {
+    size?: string;
+    getImage?: string;
+    imageMso?: string;
+    screentip?: string;
+    supertip?: string;
+    keytip?: string;
+    tag?: string;
+    getVisible?: string;
+    visible?: boolean;
+    getEnabled?: string;
+    enabled?: boolean;
+    showImage?: boolean;
+    showLabel?: boolean;
+    getLabel?: string;
+};
+
+function getBaseOptions<T extends BaseControlOptions>(options: T): T {
+    return options;
+}
+
 export function tab(
     label: string,
     id: string,
@@ -68,25 +89,13 @@ export function button(
     id: string,
     options?: Partial<Omit<Button, "type" | "id" | "label">>,
 ): Button {
+    const base = getBaseOptions(options || {});
     return {
         type: "button",
         id,
         label,
         onAction: options?.onAction,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
-        getLabel: options?.getLabel,
+        ...base,
     };
 }
 
@@ -95,27 +104,15 @@ export function checkBox(
     id: string,
     options?: Partial<Omit<CheckBox, "type" | "id" | "label">>,
 ): CheckBox {
+    const base = getBaseOptions(options || {});
     return {
         type: "checkbox",
         id,
         label,
         onAction: options?.onAction,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
         getPressed: options?.getPressed,
         pressed: options?.pressed,
-        getLabel: options?.getLabel,
+        ...base,
     };
 }
 
@@ -124,31 +121,20 @@ export function toggleButton(
     id: string,
     options?: Partial<Omit<ToggleButton, "type" | "id" | "label">>,
 ): ToggleButton {
+    const base = getBaseOptions(options || {});
     return {
         type: "toggleButton",
         id,
         label,
         onAction: options?.onAction,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
         getPressed: options?.getPressed,
         pressed: options?.pressed,
-        getLabel: options?.getLabel,
+        ...base,
     };
 }
 
 export function editBox(id: string, options?: Partial<Omit<EditBox, "type" | "id">>): EditBox {
+    const base = getBaseOptions(options || {});
     return {
         type: "editBox",
         id,
@@ -156,25 +142,13 @@ export function editBox(id: string, options?: Partial<Omit<EditBox, "type" | "id
         onChange: options?.onChange,
         getText: options?.getText,
         text: options?.text,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
-        getLabel: options?.getLabel,
         maxLength: options?.maxLength,
+        ...base,
     };
 }
 
 export function comboBox(id: string, options?: Partial<Omit<ComboBox, "type" | "id">>): ComboBox {
+    const base = getBaseOptions(options || {});
     return {
         type: "comboBox",
         id,
@@ -182,20 +156,8 @@ export function comboBox(id: string, options?: Partial<Omit<ComboBox, "type" | "
         onChange: options?.onChange,
         getText: options?.getText,
         text: options?.text,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
-        getLabel: options?.getLabel,
+        maxLength: options?.maxLength,
+        ...base,
         getItemCount: options?.getItemCount,
         getItemLabel: options?.getItemLabel,
         getItemID: options?.getItemID,
@@ -205,30 +167,17 @@ export function comboBox(id: string, options?: Partial<Omit<ComboBox, "type" | "
         getItemImage: options?.getItemImage,
         getItemScreentip: options?.getItemScreentip,
         getItemSupertip: options?.getItemSupertip,
-        maxLength: options?.maxLength,
     };
 }
 
 export function dropDown(id: string, options?: Partial<Omit<DropDown, "type" | "id">>): DropDown {
+    const base = getBaseOptions(options || {});
     return {
         type: "dropDown",
         id,
         label: options?.label,
         onChange: options?.onChange,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
-        getLabel: options?.getLabel,
+        ...base,
         getItemCount: options?.getItemCount,
         getItemLabel: options?.getItemLabel,
         getItemID: options?.getItemID,
@@ -262,25 +211,14 @@ export function splitButton(
     children?: [Button, Menu?],
 ): SplitButton {
     const [btn, mnu] = children || [button(id, "btn_" + id), undefined];
+    const base = getBaseOptions(options || {});
     return {
         type: "splitButton",
         id,
         button: btn,
         menu: mnu,
-        size: options?.size,
-        getImage: options?.getImage,
-        imageMso: options?.imageMso,
-        screentip: options?.screentip,
-        supertip: options?.supertip,
-        keytip: options?.keytip,
-        tag: options?.tag,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
-        getEnabled: options?.getEnabled,
-        enabled: options?.enabled,
-        showImage: options?.showImage,
-        showLabel: options?.showLabel,
         getDescription: options?.getDescription,
+        ...base,
     };
 }
 
@@ -302,26 +240,14 @@ export function menu(
         menuItems = items || [];
     }
 
+    const base = getBaseOptions(opts);
     return {
         type: "menu",
         id,
         label: label || undefined,
-        size: opts.size,
-        getImage: opts.getImage,
-        imageMso: opts.imageMso,
-        screentip: opts.screentip,
-        supertip: opts.supertip,
-        keytip: opts.keytip,
-        tag: opts.tag,
-        getVisible: opts.getVisible,
-        visible: opts.visible,
-        getEnabled: opts.getEnabled,
-        enabled: opts.enabled,
-        showImage: opts.showImage,
-        showLabel: opts.showLabel,
         getDescription: opts.getDescription,
-        getLabel: opts.getLabel,
         items: menuItems,
+        ...base,
     };
 }
 
