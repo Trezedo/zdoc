@@ -1,11 +1,20 @@
-const chineseKeywords = ["宋体", "仿宋", "黑体", "楷体", "方正", "小标宋"];
+const chineseKeywords = ["小标宋", "黑体", "楷体", "仿宋", "宋体", "方正"];
 const westernWhitelist = ["Times New Roman", "Nimbus Roman"];
+
+// ----- 缓存变量 -----
+let cachedWpsResult: [string[], string[]] | null = null;
+let cachedBrowserResult: [string[], string[]] | null = null;
 
 /**
  * 获取 WPS 可用字体（限制白名单）
  * @returns [chineseFonts, westernFonts]
  */
 export function getWpsFonts(): [string[], string[]] {
+    // 如果已有缓存，直接返回（slice() 浅拷贝 防止外部意外修改原数组）
+    if (cachedWpsResult) {
+        return [cachedWpsResult[0].slice(), cachedWpsResult[1].slice()];
+    }
+
     let innerFonts: Wps.FontNames | null = null;
     const emptyResult: [string[], string[]] = [[], []];
     try {
@@ -20,12 +29,18 @@ export function getWpsFonts(): [string[], string[]] {
         fonts.push(innerFonts.Item(i));
     }
 
-    const chineseFonts = fonts.filter(
+    let chineseFonts = fonts.filter(
         (f) => chineseKeywords.some((kw) => f.includes(kw)) || /[\u4e00-\u9fa5]/.test(f),
     );
-    const westernFonts = fonts.filter((f) => westernWhitelist.includes(f));
+    let westernFonts = fonts.filter((f) => westernWhitelist.includes(f));
 
-    return [chineseFonts, westernFonts];
+    // 按关键字顺序排序
+    chineseFonts = sortByOrder(chineseFonts, chineseKeywords);
+    westernFonts = sortByOrder(westernFonts, westernWhitelist);
+
+    // 存入缓存
+    cachedWpsResult = [chineseFonts, westernFonts];
+    return [chineseFonts.slice(), westernFonts.slice()];
 }
 
 /**
@@ -35,6 +50,10 @@ export function getWpsFonts(): [string[], string[]] {
  * @returns [chineseFonts, westernFonts]
  */
 export async function getBrowserFonts(): Promise<[string[], string[]]> {
+    if (cachedBrowserResult) {
+        return [cachedBrowserResult[0].slice(), cachedBrowserResult[1].slice()];
+    }
+
     if (!("queryLocalFonts" in window)) {
         console.warn("当前浏览器不支持 queryLocalFonts API");
         return [[], []];
@@ -44,16 +63,39 @@ export async function getBrowserFonts(): Promise<[string[], string[]]> {
         const fonts = await window.queryLocalFonts();
         const fontNames = fonts.filter((f) => f.style == "Regular").map((font) => font.fullName);
 
-        const chineseFonts = fontNames.filter(
+        let chineseFonts = fontNames.filter(
             (f) => chineseKeywords.some((kw) => f.includes(kw)) || /[\u4e00-\u9fa5]/.test(f),
         );
-        const westernFonts = fontNames.filter((f) => westernWhitelist.includes(f));
+        let westernFonts = fontNames.filter((f) => westernWhitelist.includes(f));
 
-        return [chineseFonts, westernFonts];
+        chineseFonts = sortByOrder(chineseFonts, chineseKeywords);
+        westernFonts = sortByOrder(westernFonts, westernWhitelist);
+
+        cachedBrowserResult = [chineseFonts, westernFonts];
+        return [chineseFonts.slice(), westernFonts.slice()];
     } catch (err) {
         console.error("用户拒绝授权或获取失败", err);
+        cachedBrowserResult = [[], []];
         return [[], []];
     }
+}
+
+/**
+ * 按关键词出现顺序对字体列表排序（未匹配的排在末尾）
+ * @param fonts 字体名数组
+ * @param order 关键词顺序数组
+ * @returns 排序后的新数组
+ */
+function sortByOrder(fonts: string[], order: string[]): string[] {
+    const getIndex = (font: string) => {
+        for (let i = 0; i < order.length; i++) {
+            if (font.includes(order[i])) {
+                return i;
+            }
+        }
+        return Infinity; // 未匹配的放到最后
+    };
+    return [...fonts].sort((a, b) => getIndex(a) - getIndex(b));
 }
 
 const fontSizeMap: Record<number, string> = {
