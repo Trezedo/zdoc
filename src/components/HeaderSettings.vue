@@ -58,9 +58,10 @@
 </template>
 
 <script setup lang="ts">
+import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_HEADER_CONFIG } from "@/jsa/commands/header";
 import type { HeaderConfig } from "@/jsa/types";
-import { getWpsFonts, getBrowserFonts, getChineseFontSizeName } from "@/utils/fonts";
+import { getChineseFontSizeName } from "@/utils/fonts";
 
 const positionOptions = [
     { label: "左侧", value: "left" },
@@ -100,26 +101,7 @@ watch(
     { immediate: true },
 );
 
-const chineseFonts = ref<string[]>([]);
-const chineseFontOptions = computed(() =>
-    chineseFonts.value.map((font) => ({ label: font, value: font })),
-);
-
-async function loadFonts() {
-    try {
-        const [wpsChinese] = getWpsFonts();
-        if (wpsChinese?.length) {
-            chineseFonts.value = wpsChinese;
-        } else {
-            const [chn] = await getBrowserFonts();
-            chineseFonts.value = chn || ["宋体", "仿宋", "黑体", "楷体"];
-        }
-    } catch {
-        chineseFonts.value = ["宋体", "仿宋", "黑体", "楷体"];
-    }
-}
-
-onMounted(loadFonts);
+const { chineseFontOptions } = useFonts();
 </script>
 
 <style scoped></style>

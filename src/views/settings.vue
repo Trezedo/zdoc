@@ -33,12 +33,14 @@
 </template>
 
 <script setup lang="ts">
-import TypographySettings from "@/components/TypographySettings.vue";
 import PageSettings from "@/components/PageSettings.vue";
+import TypographySettings from "@/components/TypographySettings.vue";
 import { getDefaultTypoConfig } from "@/config/typography";
-import { saveGovDocConfig, loadGovDocConfig } from "@/jsa/utils/storage";
+import { validateGovDocConfig } from "@/config/validator";
+import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/jsa/commands/document";
 import type { GovDocConfig } from "@/jsa/types";
 import { loadConfigLocal } from "@/jsa/utils/document";
+import { loadGovDocConfig, saveGovDocConfig } from "@/jsa/utils/storage";
 
 const typographyRef = ref<InstanceType<typeof TypographySettings> | null>(null);
 const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
@@ -46,44 +48,24 @@ const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
 const message = useMessage();
 const notification = useNotification();
 
-const defaultPageLayout = {
-    header: 1.5,
-    top: 3.7,
-    left: 2.8,
-    right: 2.6,
-    bottom: 3.5,
-    footer: 2.4,
-};
-
 type LocalConfig = Omit<GovDocConfig, "pagenum">;
 const config = reactive<LocalConfig>(getDefaultConfigFull());
 
 function getDefaultConfigFull(): LocalConfig {
     return {
         typography: getDefaultTypoConfig(),
-        pageLayout: { ...defaultPageLayout },
+        pageLayout: { ...DEFAULT_PAGE_LAYOUT_CONFIG },
     };
 }
 
 function loadConfig() {
     const saved = loadGovDocConfig();
     if (saved) {
-        // 清理嵌套的 typography（如果有）
-        // @ts-ignore
-        if (saved.typography && saved.typography.typography) {
-            // @ts-ignore
-            delete saved.typography.typography;
-            // 如果有更深层，可以递归清理，但一般一层就够了
-        }
-        if (saved.typography) {
-            Object.assign(config.typography, saved.typography);
-        }
-        if (saved.pageLayout) {
-            Object.assign(config.pageLayout, saved.pageLayout);
-        }
+        const validated = validateGovDocConfig(saved);
+        Object.assign(config.typography, validated.typography);
+        Object.assign(config.pageLayout, validated.pageLayout);
         message.success("已从配置加载");
     } else {
-        // 尝试读取原始内容，判断是文件不存在还是解析失败
         const content = loadConfigLocal();
         if (content === null) {
             message.warning("未找到本地配置文件，使用默认配置");

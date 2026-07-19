@@ -1,16 +1,24 @@
 import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
+import type { PageLayoutConfig } from "@/jsa/types";
 import { setItem } from "@/jsa/utils/storage";
-import type { PageLayoutOptions } from "@/jsa/types";
 import { handleAttachments } from "@/utils";
 
 import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
+
+export const DEFAULT_PAGE_LAYOUT_CONFIG: PageLayoutConfig = Object.freeze({
+    top: 3.7,
+    left: 2.8,
+    right: 2.6,
+    bottom: 3.5,
+});
 
 /**
  * 设置当前文档的页面布局
  * @param options 页面参数
  */
-export function setPageLayout(options: PageLayoutOptions = {}, doc: Wps.Document = ActiveDocument) {
-    const { top: top = 3.7, bottom: bottom = 3.5, left: left = 2.8, right: right = 2.6 } = options;
+export function setPageLayout(options: PageLayoutConfig, doc: Wps.Document = ActiveDocument) {
+    const merged = Object.assign({}, DEFAULT_PAGE_LAYOUT_CONFIG, options);
+    const { top, bottom, left, right } = merged;
 
     const ps = doc.PageSetup; // 获取页面设置对象
     // 设置上下左右边距（厘米）

@@ -117,11 +117,11 @@ import FooterSettings from "@/components/FooterSettings.vue";
 import { DEFAULT_HEADER_CONFIG, removeAllHeaders, setHeader } from "@/jsa/commands/header";
 import {
     addFooterPagenum,
-    removePagenum,
-    hasPagenum,
     DEFAULT_FOOTER_CONFIG,
+    hasPagenum,
+    removePagenum,
 } from "@/jsa/commands/pagenum";
-import type { HeaderConfig, FooterConfig } from "@/jsa/types";
+import type { FooterConfig, HeaderConfig } from "@/jsa/types";
 import { refreshDocumentView } from "@/jsa/utils/document";
 
 const message = useMessage();
@@ -131,10 +131,8 @@ const headerConfig = ref<HeaderConfig>({ ...DEFAULT_HEADER_CONFIG });
 
 function insertHeader() {
     const { content, position, font, fontSize, distance } = headerConfig.value;
-    setHeader(content, position, font, fontSize);
+    setHeader(content, position, font, fontSize, distance);
     refreshDocumentView();
-    const ps = ActiveDocument.PageSetup; // 获取页面设置对象
-    ps.HeaderDistance = Application.CentimetersToPoints(distance);
     message.info("已修改页眉");
 }
 
@@ -166,11 +164,8 @@ function checkPageNum() {
 
 function insertFooter() {
     try {
-        addFooterPagenum(footerConfig.value); // 使用默认主页脚
+        addFooterPagenum(footerConfig.value);
         checkPageNum();
-
-        const ps = ActiveDocument.PageSetup;
-        ps.FooterDistance = Application.CentimetersToPoints(footerConfig.value.distance);
         message.success("页码已插入/更新");
     } catch (e) {
         console.warn(e);

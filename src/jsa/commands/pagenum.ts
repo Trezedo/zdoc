@@ -256,18 +256,18 @@ export function addFooterPagenum(config?: FooterConfig, doc: Wps.Document = Acti
     // 确保关闭“奇偶页不同”
     ActiveDocument.PageSetup.OddAndEvenPagesHeaderFooter = msoFalse;
 
+    if (finalConfig.distance !== undefined && finalConfig.distance >= 0) {
+        doc.PageSetup.FooterDistance = Application.CentimetersToPoints(finalConfig.distance);
+    }
+
     const existing = findPagenumShape(footer);
     const position = mapPosition(finalConfig.position);
 
     if (existing) {
-        // 存在：直接更新
         updatePagenumShape(existing, position, finalConfig.font, finalConfig.fontSize);
         return;
     }
 
-    // 不存在：先清理当前页脚的所有页码（避免残留无名称的旧文本框或域）
-    removePagenum(doc); // 注意：这里传入 footer，仅清理该页脚
-
-    // 再新建
+    removePagenum(doc);
     createPagenumShape(footer, position, finalConfig.font, finalConfig.fontSize);
 }

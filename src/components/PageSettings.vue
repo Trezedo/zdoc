@@ -60,22 +60,19 @@
 </template>
 
 <script setup lang="ts">
-import { setPageLayout } from "@/jsa/commands/document";
-import type { PageLayoutOptions } from "@/jsa/types";
+import { DEFAULT_PAGE_LAYOUT_CONFIG, setPageLayout } from "@/jsa/commands/document";
+import type { PageLayoutConfig } from "@/jsa/types";
 
 const props = defineProps<{
-    modelValue: PageLayoutOptions;
+    modelValue: PageLayoutConfig;
 }>();
 
 const emit = defineEmits<{
-    "update:modelValue": [value: PageLayoutOptions];
+    "update:modelValue": [value: PageLayoutConfig];
 }>();
 
-const localConfig = reactive<PageLayoutOptions>({
-    top: 3.7,
-    left: 2.8,
-    right: 2.6,
-    bottom: 3.5,
+const localConfig = reactive<PageLayoutConfig>({
+    ...DEFAULT_PAGE_LAYOUT_CONFIG,
     ...props.modelValue,
 });
 
@@ -96,10 +93,7 @@ watch(
 );
 
 const resetToDefault = () => {
-    localConfig.top = 3.7;
-    localConfig.left = 2.8;
-    localConfig.right = 2.6;
-    localConfig.bottom = 3.5;
+    Object.assign(localConfig, DEFAULT_PAGE_LAYOUT_CONFIG);
 };
 
 const applyMargins = () => {

@@ -21,6 +21,7 @@ export function setHeader(
     position: string,
     fontName: string,
     fontSize: number,
+    distance?: number,
     doc: Wps.Document = ActiveDocument,
 ) {
     if (!doc) {
@@ -28,14 +29,11 @@ export function setHeader(
         return;
     }
 
-    // 获取第一节的主页眉（wdHeaderFooterPrimary = 1）
     const section = doc.Sections.Item(1);
-    const header = section.Headers.Item(1); // 1 表示 wdHeaderFooterPrimary
+    const header = section.Headers.Item(1);
 
-    // 清空原有内容，写入新文本
     header.Range.Text = content;
 
-    // 设置字体
     if (fontName) {
         header.Range.Font.Name = fontName;
     }
@@ -43,14 +41,17 @@ export function setHeader(
         header.Range.Font.Size = fontSize;
     }
 
-    // 设置段落对齐方式
-    let align = wdAlignParagraphLeft; // 默认左对齐
+    let align = wdAlignParagraphLeft;
     if (position === "center") {
         align = wdAlignParagraphCenter;
     } else if (position === "right") {
         align = wdAlignParagraphRight;
     }
     header.Range.ParagraphFormat.Alignment = align;
+
+    if (distance !== undefined && distance >= 0) {
+        doc.PageSetup.HeaderDistance = Application.CentimetersToPoints(distance);
+    }
 }
 
 /**

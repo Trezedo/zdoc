@@ -52,9 +52,10 @@
 </template>
 
 <script setup lang="ts">
+import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_FOOTER_CONFIG } from "@/jsa/commands/pagenum";
 import type { FooterConfig } from "@/jsa/types";
-import { getWpsFonts, getBrowserFonts, getChineseFontSizeName } from "@/utils/fonts";
+import { getChineseFontSizeName } from "@/utils/fonts";
 
 // 位置选项（图标直接放在 public/images/ 目录下）
 const positionOptions = [
@@ -92,21 +93,7 @@ watch(
     { immediate: true },
 );
 
-const chineseFonts = ref<string[]>([]);
-const chineseFontOptions = computed(() =>
-    chineseFonts.value.map((font) => ({ label: font, value: font })),
-);
-
-async function loadFonts() {
-    const [wpsChinese] = getWpsFonts();
-    if (wpsChinese.length > 0) {
-        chineseFonts.value = wpsChinese;
-    } else {
-        const [chn] = await getBrowserFonts();
-        chineseFonts.value = chn;
-    }
-}
-onMounted(loadFonts);
+const { chineseFontOptions } = useFonts();
 </script>
 
 <style lang="css">

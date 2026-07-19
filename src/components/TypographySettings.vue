@@ -181,11 +181,12 @@
 </template>
 
 <script setup lang="ts">
+import { useFonts } from "@/composables/useFonts";
 import { getDefaultTypoConfig } from "@/config/typography";
-import { getBrowserFonts, getWpsFonts, getChineseFontSizeName } from "@/utils";
+import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
 import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
-import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
+import { getChineseFontSizeName } from "@/utils/fonts";
 
 const props = defineProps<{
     modelValue: TypographyConfig;
@@ -194,9 +195,6 @@ const props = defineProps<{
 const emit = defineEmits<{
     "update:modelValue": [value: TypographyConfig];
 }>();
-
-const chineseFonts = ref<string[]>([]);
-const westernFonts = ref<string[]>([]);
 
 const topicBoldModeOptions = [
     { label: "自动（短句整句加粗，长句仅前缀）", value: "auto" },
@@ -222,13 +220,9 @@ watch(
     { deep: true },
 );
 
-const chineseFontOptions = computed(() =>
-    chineseFonts.value.map((font) => ({ label: font, value: font })),
-);
-
-const rawWesternOptions = computed(() =>
-    westernFonts.value.map((font) => ({ label: font, value: font })),
-);
+const { chineseFontOptions, westernFontOptions: rawWesternOptions } = useFonts({
+    loadWestern: true,
+});
 
 const titleWesternOptions = computed(() => [
     { label: "随中文：" + localConfig.title.zh, value: localConfig.title.zh },
@@ -265,22 +259,6 @@ const resetToDefault = () => {
     const def = getDefaultTypoConfig();
     Object.assign(localConfig, def);
 };
-
-async function loadFonts() {
-    const [wpsChinese, wpsWestern] = getWpsFonts();
-    if (wpsChinese.length > 0) {
-        chineseFonts.value = wpsChinese;
-        westernFonts.value = wpsWestern;
-    } else {
-        const [chn, west] = await getBrowserFonts();
-        chineseFonts.value = chn;
-        westernFonts.value = west;
-    }
-}
-
-onMounted(() => {
-    loadFonts();
-});
 
 defineExpose({
     applyStyle,
