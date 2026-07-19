@@ -35,6 +35,9 @@ importers:
       vue-router:
         specifier: 'catalog:'
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(vite@8.0.16(@types/node@25.9.4)(jiti@1.21.7)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@types/diff-match-patch':
         specifier: ^1.0.36
@@ -1956,6 +1959,9 @@ packages:
   zod@4.1.11:
     resolution: {integrity: sha512-WPsqwxITS2tzx1bzhIKsEs19ABD5vmCVa4xBo2tq/SrV4RNZtfws1EnCWQXM6yh8bD08a1idvkB5MZSBiZsjwg==}
 
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
 snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
@@ -3712,3 +3718,5 @@ snapshots:
   yaml@2.9.0: {}
 
   zod@4.1.11: {}
+
+  zod@4.4.3: {}
