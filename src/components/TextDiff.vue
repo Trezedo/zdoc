@@ -12,7 +12,12 @@
 </template>
 
 <script setup lang="ts">
-import DiffMatchPatch from "diff-match-patch";
+import {
+    diff,
+    diffCleanupEfficiency,
+    diffCleanupSemantic,
+    diffPrettyHtml,
+} from "diff-match-patch-es";
 
 const props = defineProps<{
     oldText: string;
@@ -36,23 +41,21 @@ function computeDiff() {
 
     const startTime = performance.now();
 
-    const dmp = new DiffMatchPatch();
-    let diffs = dmp.diff_main(props.oldText, props.newText);
+    let diffs = diff(props.oldText, props.newText);
 
     const mode = props.cleanupMode || "semantic";
     switch (mode) {
         case "semantic":
-            dmp.diff_cleanupSemantic(diffs);
+            diffCleanupSemantic(diffs);
             break;
         case "efficiency":
-            dmp.Diff_EditCost = props.editCost ?? 4;
-            dmp.diff_cleanupEfficiency(diffs);
+            diffCleanupEfficiency(diffs, { diffEditCost: props.editCost ?? 4 });
             break;
         case "none":
             break;
     }
 
-    diffHtml.value = dmp.diff_prettyHtml(diffs);
+    diffHtml.value = diffPrettyHtml(diffs);
 
     const endTime = performance.now();
     emit("update:duration", endTime - startTime);
