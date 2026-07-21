@@ -1,6 +1,7 @@
+import type { RouteNamedMap } from "vue-router/auto-routes";
+
 import { getItem, removeItem, setItem } from "@/jsa/utils/storage";
 import { getRouterUrl } from "@/utils";
-import type { RouteNamedMap } from "vue-router/auto-routes";
 
 // 存储键名常量
 export const STORAGE_KEYS = {

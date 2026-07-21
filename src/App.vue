@@ -13,8 +13,9 @@
 </template>
 
 <script setup lang="ts">
-import { setupRibbonBindings } from "@/jsa/ribbon/actions";
 import { zhCN } from "naive-ui";
+
+import { setupRibbonBindings } from "@/jsa/ribbon/actions";
 
 onMounted(() => {
     setupRibbonBindings();

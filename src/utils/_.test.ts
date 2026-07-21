@@ -1,4 +1,5 @@
-import { test, expect } from "vitest";
+import { expect, test } from "vitest";
+
 import { handleAttachments } from "@/utils";
 
 test("测试附件对齐", () => {
