@@ -1,6 +1,6 @@
-import { getDefaultTypoConfig } from "@/config/typography";
-import { withUndoRecord } from "@/jsa/utils/document";
+import { DEFAULT_TYPO_CONFIG } from "@/config/defaults";
 import type { SimpleFontConfig, TopicBoldMode, TypographyConfig } from "@/jsa/types";
+import { withUndoRecord } from "@/jsa/utils/document";
 import { findMainTitleBlocks, isSubtitleLine, type ParaInfo } from "@/utils";
 
 import { formatAttachments } from "./document";
@@ -251,7 +251,7 @@ function applyHierarchicalStyles(
  * @param range 排版范围，不传则处理整个文档；传入则仅处理该范围内的段落
  */
 function formatGovDoc(
-    config: TypographyConfig = getDefaultTypoConfig(),
+    config: TypographyConfig = DEFAULT_TYPO_CONFIG,
     doc: Wps.Document = ActiveDocument,
     range?: Wps.Range,
 ) {

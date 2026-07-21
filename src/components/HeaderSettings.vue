@@ -59,7 +59,7 @@
 
 <script setup lang="ts">
 import { useFonts } from "@/composables/useFonts";
-import { DEFAULT_HEADER_CONFIG } from "@/jsa/commands/header";
+import { DEFAULT_HEADER_CONFIG } from "@/config/defaults";
 import type { HeaderConfig } from "@/jsa/types";
 import { getChineseFontSizeName } from "@/utils/fonts";
 

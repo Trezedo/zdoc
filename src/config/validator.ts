@@ -1,8 +1,11 @@
 import { z } from "zod";
 
-import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/jsa/commands/document";
-import { DEFAULT_HEADER_CONFIG } from "@/jsa/commands/header";
-import { DEFAULT_FOOTER_CONFIG } from "@/jsa/commands/pagenum";
+import {
+    DEFAULT_FOOTER_CONFIG,
+    DEFAULT_HEADER_CONFIG,
+    DEFAULT_PAGE_LAYOUT_CONFIG,
+    DEFAULT_TYPO_CONFIG,
+} from "@/config/defaults";
 import type {
     FooterConfig,
     GovDocConfig,
@@ -10,10 +13,6 @@ import type {
     PageLayoutConfig,
     TypographyConfig,
 } from "@/jsa/types";
-
-import { getDefaultTypoConfig } from "./typography";
-
-const DEFAULT_TYPO_CONFIG = getDefaultTypoConfig();
 
 const PageLayoutSchema = z
     .object({
@@ -94,9 +93,10 @@ const FooterSchema = z
 
 const GovDocConfigSchema = z
     .object({
-        typography: TypographySchema.default(DEFAULT_TYPO_CONFIG), // 直接使用常量
-        pageLayout: PageLayoutSchema.default({ ...DEFAULT_PAGE_LAYOUT_CONFIG }),
-        pagenum: FooterSchema.optional(),
+        pageLayout: PageLayoutSchema.default(DEFAULT_PAGE_LAYOUT_CONFIG),
+        typography: TypographySchema.default(DEFAULT_TYPO_CONFIG),
+        header: HeaderSchema.default(DEFAULT_HEADER_CONFIG),
+        footer: FooterSchema.default(DEFAULT_FOOTER_CONFIG),
     })
     .strip();
 

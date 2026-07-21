@@ -1,14 +1,3 @@
-import type { HeaderConfig } from "../types";
-
-/** 默认页眉配置 */
-export const DEFAULT_HEADER_CONFIG: HeaderConfig = Object.freeze({
-    content: "",
-    font: "黑体",
-    fontSize: 16,
-    position: "left",
-    distance: 1.5,
-});
-
 /**
  * 设置当前文档的主页眉
  * @param {string} content     页眉文本内容

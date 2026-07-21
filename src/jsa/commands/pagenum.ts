@@ -1,12 +1,6 @@
-import type { FooterConfig } from "../types";
+import { DEFAULT_FOOTER_CONFIG } from "@/config/defaults";
 
-/** 默认页脚配置 */
-export const DEFAULT_FOOTER_CONFIG: FooterConfig = Object.freeze({
-    font: "宋体",
-    fontSize: 14,
-    position: "outside",
-    distance: 2.4,
-});
+import type { FooterConfig } from "../types";
 
 /**
  * 配置形状（文本框）的填充、边框、位置及文字环绕方式。

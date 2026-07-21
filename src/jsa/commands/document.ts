@@ -1,16 +1,10 @@
+import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/config/defaults";
 import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
 import type { PageLayoutConfig } from "@/jsa/types";
 import { setItem } from "@/jsa/utils/storage";
 import { handleAttachments } from "@/utils";
 
 import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
-
-export const DEFAULT_PAGE_LAYOUT_CONFIG: PageLayoutConfig = Object.freeze({
-    top: 3.7,
-    left: 2.8,
-    right: 2.6,
-    bottom: 3.5,
-});
 
 /**
  * 设置当前文档的页面布局

@@ -13,7 +13,7 @@
                         </label>
                         <div class="flex flex-1 items-center gap-1">
                             <n-input-number
-                                v-model:value="headerConfig.distance"
+                                v-model:value="header.distance"
                                 :min="0"
                                 :step="0.1"
                                 size="medium"
@@ -30,7 +30,7 @@
                         </label>
                         <div class="flex flex-1 items-center gap-1">
                             <n-input-number
-                                v-model:value="footerConfig.distance"
+                                v-model:value="footer.distance"
                                 :min="0"
                                 :step="0.1"
                                 size="medium"
@@ -58,12 +58,21 @@
                             <span>页眉设置</span>
                         </template>
                         <template #header-extra>
-                            <n-button size="small" round @click="resetDefaultHeader">
-                                重置
-                            </n-button>
+                            <div class="flex gap-2">
+                                <n-button size="small" round type="info" @click="applyHeader">
+                                    应用
+                                </n-button>
+                                <n-button size="small" round type="warning" @click="removeHeader">
+                                    删除
+                                </n-button>
+                                <n-button size="small" round @click="resetDefaultHeader">
+                                    重置
+                                </n-button>
+                            </div>
                         </template>
 
-                        <HeaderSettings v-model="headerConfig" />
+                        <!-- 传入 store 中的 header 配置 -->
+                        <HeaderSettings v-model="header" />
                     </n-collapse-item>
 
                     <n-collapse-item name="footer">
@@ -76,12 +85,20 @@
                             <span>页脚设置</span>
                         </template>
                         <template #header-extra>
-                            <n-button size="small" round @click="resetDefaultFooter">
-                                重置
-                            </n-button>
+                            <div class="flex gap-2">
+                                <n-button size="small" round type="info" @click="applyFooter">
+                                    应用
+                                </n-button>
+                                <n-button size="small" round type="warning" @click="removeFooter">
+                                    删除
+                                </n-button>
+                                <n-button size="small" round @click="resetDefaultFooter">
+                                    重置
+                                </n-button>
+                            </div>
                         </template>
 
-                        <FooterSettings v-model="footerConfig" />
+                        <FooterSettings v-model="footer" />
 
                         <!-- 状态提示 -->
                         <n-alert v-if="hasPageNum" type="info" size="small" class="mt-4">
@@ -96,41 +113,43 @@
         </n-scrollbar>
 
         <div
-            class="flex flex-wrap items-center justify-between p-5 border-t border-gray-200 bg-white"
+            class="flex flex-wrap items-center justify-around p-5 border-t border-gray-200 bg-white"
         >
-            <div class="flex flex-wrap items-center gap-2">
-                <n-button type="info" size="medium" @click="insertHeader">修改页眉</n-button>
-                <n-button type="error" size="medium" @click="removeHeader">删除页眉</n-button>
-            </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <n-button type="success" size="medium" @click="insertFooter">设置页码</n-button>
-                <n-button type="warning" size="medium" @click="removeFooterPagenum">
-                    删除页码
-                </n-button>
-            </div>
+            <n-button @click="importConfig">载入配置</n-button>
+            <n-button @click="saveConfig">保存配置</n-button>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import FooterSettings from "@/components/FooterSettings.vue";
-import { DEFAULT_HEADER_CONFIG, removeAllHeaders, setHeader } from "@/jsa/commands/header";
-import {
-    addFooterPagenum,
-    DEFAULT_FOOTER_CONFIG,
-    hasPagenum,
-    removePagenum,
-} from "@/jsa/commands/pagenum";
-import type { FooterConfig, HeaderConfig } from "@/jsa/types";
+import HeaderSettings from "@/components/HeaderSettings.vue";
+import { DEFAULT_FOOTER_CONFIG, DEFAULT_HEADER_CONFIG } from "@/config/defaults";
+import { removeAllHeaders, setHeader } from "@/jsa/commands/header";
+import { addFooterPagenum, hasPagenum, removePagenum } from "@/jsa/commands/pagenum";
 import { refreshDocumentView } from "@/jsa/utils/document";
+import { useGovDocConfigStore } from "@/stores/govDocConfig";
 
 const message = useMessage();
+const notification = useNotification();
 
-// 注意必须展开,创建对象副本
-const headerConfig = ref<HeaderConfig>({ ...DEFAULT_HEADER_CONFIG });
+const store = useGovDocConfigStore();
+// 使用 storeToRefs 解构，保持响应式
+const { header, footer } = storeToRefs(store);
 
-function insertHeader() {
-    const { content, position, font, fontSize, distance } = headerConfig.value;
+const hasPageNum = ref(false);
+
+function checkPageNum() {
+    try {
+        hasPageNum.value = hasPagenum();
+    } catch {
+        hasPageNum.value = false;
+    }
+}
+
+// ---- 页眉操作 ----
+function applyHeader() {
+    const { content, position, font, fontSize, distance } = header.value;
     setHeader(content, position, font, fontSize, distance);
     refreshDocumentView();
     message.info("已修改页眉");
@@ -143,28 +162,14 @@ function removeHeader() {
 }
 
 function resetDefaultHeader() {
-    headerConfig.value = { ...DEFAULT_HEADER_CONFIG };
+    store.header = { ...DEFAULT_HEADER_CONFIG };
     message.info("页眉配置已恢复默认");
 }
 
-// -------------------- 页脚 --------------------
-const footerConfig = ref<FooterConfig>({ ...DEFAULT_FOOTER_CONFIG });
-
-// 页码是否存在
-const hasPageNum = ref(false);
-
-// 检测页码状态
-function checkPageNum() {
+// ---- 页脚操作 ----
+function applyFooter() {
     try {
-        hasPageNum.value = hasPagenum();
-    } catch {
-        hasPageNum.value = false;
-    }
-}
-
-function insertFooter() {
-    try {
-        addFooterPagenum(footerConfig.value);
+        addFooterPagenum(footer.value);
         checkPageNum();
         message.success("页码已插入/更新");
     } catch (e) {
@@ -173,9 +178,9 @@ function insertFooter() {
     }
 }
 
-function removeFooterPagenum() {
+function removeFooter() {
     try {
-        removePagenum(); // 使用默认主页脚
+        removePagenum();
         checkPageNum();
         message.success("所有页码已删除");
         refreshDocumentView();
@@ -186,8 +191,27 @@ function removeFooterPagenum() {
 }
 
 function resetDefaultFooter() {
-    footerConfig.value = { ...DEFAULT_FOOTER_CONFIG };
+    store.footer = { ...DEFAULT_FOOTER_CONFIG };
     message.info("页脚配置已恢复默认");
+}
+
+function saveConfig() {
+    const result = store.saveToFile();
+    if (result.success) {
+        notification.success({
+            title: "保存成功",
+            content: "文件路径：" + result.path,
+            duration: 3000,
+            keepAliveOnHover: true,
+        });
+    } else {
+        message.error("保存失败，路径：" + result.path);
+    }
+}
+
+function importConfig() {
+    store.reloadFromFile();
+    message.success("已从配置文件重新载入");
 }
 
 onMounted(() => {

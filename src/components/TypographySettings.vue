@@ -182,7 +182,7 @@
 
 <script setup lang="ts">
 import { useFonts } from "@/composables/useFonts";
-import { getDefaultTypoConfig } from "@/config/typography";
+import { DEFAULT_TYPO_CONFIG } from "@/config/defaults";
 import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
 import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
@@ -256,7 +256,7 @@ const applyStyle = () => {
 };
 
 const resetToDefault = () => {
-    const def = getDefaultTypoConfig();
+    const def = { ...DEFAULT_TYPO_CONFIG };
     Object.assign(localConfig, def);
 };
 

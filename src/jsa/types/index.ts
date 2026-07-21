@@ -80,6 +80,8 @@ export interface PageLayoutConfig {
     right: number;
 }
 
+export type HeaderPosition = "left" | "center" | "right";
+
 /**
  * 页眉/页脚内容配置
  * 用于定义文档页眉或页脚的文本样式及对齐方式
@@ -88,14 +90,16 @@ export interface HeaderConfig {
     /** 显示的文本内容 */
     content: string;
     /** 水平对齐方式 */
-    position: "left" | "center" | "right";
-    /** 字体名称（如 'Arial', 'Times New Roman'） */
+    position: HeaderPosition;
+    /** 字体名称 */
     font: string;
     /** 字体大小（单位：磅） */
     fontSize: number;
     /** 页眉距纸张顶端距离（厘米） */
     distance: number;
 }
+
+export type PagenumPosition = "left" | "middle" | "right" | "inside" | "outside";
 
 /**
  * 页码配置
@@ -106,8 +110,8 @@ export interface FooterConfig {
     font: string;
     /** 字体大小（单位：磅） */
     fontSize: number;
-    /** 页码在页眉/页脚中的位置 */
-    position: "left" | "right" | "middle" | "inside" | "outside";
+    /** 页码在页脚中的位置 */
+    position: PagenumPosition;
     /** 页脚距纸张底端距离（厘米） */
     distance: number;
 }
@@ -124,9 +128,10 @@ export interface HeaderFooterConfig {
 }
 
 export interface GovDocConfig {
-    typography: TypographyConfig;
     pageLayout: PageLayoutConfig;
-    pagenum?: FooterConfig;
+    typography: TypographyConfig;
+    header: HeaderConfig;
+    footer: FooterConfig;
 }
 
 export interface ParaInfo {

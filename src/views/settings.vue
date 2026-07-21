@@ -12,10 +12,10 @@
                     class="collapse-panel"
                 >
                     <n-collapse-item name="page" title="📐 页面设置">
-                        <PageSettings v-model="config.pageLayout" ref="pageRef" />
+                        <PageSettings v-model="pageLayout" ref="pageRef" />
                     </n-collapse-item>
                     <n-collapse-item name="typography" title="📝 字体设置">
-                        <TypographySettings v-model="config.typography" ref="typographyRef" />
+                        <TypographySettings v-model="typography" ref="typographyRef" />
                     </n-collapse-item>
                 </n-collapse>
             </div>
@@ -35,12 +35,8 @@
 <script setup lang="ts">
 import PageSettings from "@/components/PageSettings.vue";
 import TypographySettings from "@/components/TypographySettings.vue";
-import { getDefaultTypoConfig } from "@/config/typography";
-import { validateGovDocConfig } from "@/config/validator";
-import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/jsa/commands/document";
-import type { GovDocConfig } from "@/jsa/types";
-import { loadConfigLocal } from "@/jsa/utils/document";
-import { loadGovDocConfig, saveGovDocConfig } from "@/jsa/utils/storage";
+import { getDefaultConfigFull } from "@/config/defaults";
+import { useGovDocConfigStore } from "@/stores/govDocConfig";
 
 const typographyRef = ref<InstanceType<typeof TypographySettings> | null>(null);
 const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
@@ -48,35 +44,12 @@ const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
 const message = useMessage();
 const notification = useNotification();
 
-type LocalConfig = Omit<GovDocConfig, "pagenum">;
-const config = reactive<LocalConfig>(getDefaultConfigFull());
-
-function getDefaultConfigFull(): LocalConfig {
-    return {
-        typography: getDefaultTypoConfig(),
-        pageLayout: { ...DEFAULT_PAGE_LAYOUT_CONFIG },
-    };
-}
-
-function loadConfig() {
-    const saved = loadGovDocConfig();
-    if (saved) {
-        const validated = validateGovDocConfig(saved);
-        Object.assign(config.typography, validated.typography);
-        Object.assign(config.pageLayout, validated.pageLayout);
-        message.success("已从配置加载");
-    } else {
-        const content = loadConfigLocal();
-        if (content === null) {
-            message.warning("未找到本地配置文件，使用默认配置");
-        } else {
-            message.error("配置文件解析失败，请检查文件格式");
-        }
-    }
-}
+const store = useGovDocConfigStore();
+// 使用 storeToRefs 解构，保持响应式
+const { pageLayout, typography } = storeToRefs(store);
 
 function saveConfig() {
-    const result = saveGovDocConfig(config);
+    const result = store.saveToFile();
     if (result.success) {
         notification.success({
             title: "保存成功",
@@ -90,25 +63,24 @@ function saveConfig() {
 }
 
 function importConfig() {
-    loadConfig();
+    store.reloadFromFile();
+    message.success("已从配置文件重新载入");
 }
 
 async function applyAll() {
-    typographyRef.value?.applyStyle();
     pageRef.value?.applyMargins();
+    typographyRef.value?.applyStyle();
     message.info("所有设置已应用");
 }
 
 function resetAll() {
     const def = getDefaultConfigFull();
-    Object.assign(config.typography, def.typography);
-    Object.assign(config.pageLayout, def.pageLayout);
+    store.pageLayout = def.pageLayout;
+    store.typography = def.typography;
+    store.header = def.header!;
+    store.footer = def.footer!;
     message.info("已恢复默认设置");
 }
-
-onMounted(() => {
-    loadConfig();
-});
 </script>
 
 <style scoped></style>

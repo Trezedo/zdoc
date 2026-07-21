@@ -1,13 +1,13 @@
 import { fileURLToPath, URL } from "node:url";
-import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import VueRouter from "vue-router/vite";
 import AutoImport from "unplugin-auto-import/vite";
-import Components from "unplugin-vue-components/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
+import Components from "unplugin-vue-components/vite";
+import { defineConfig } from "vite";
 import bundleObfuscator from "vite-plugin-bundle-obfuscator";
-
 import { ribbonPlugin } from "vite-plugin-ribbon";
+import VueRouter from "vue-router/vite";
+
 import { xmlConfig } from "./src/jsa/ribbon/xmlConfig";
 
 export default defineConfig({
@@ -37,6 +37,7 @@ export default defineConfig({
             imports: [
                 "vue",
                 "vue-router",
+                "pinia",
                 {
                     "naive-ui": ["useDialog", "useMessage", "useNotification", "useLoadingBar"],
                 },
