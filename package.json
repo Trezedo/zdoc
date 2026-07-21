@@ -28,6 +28,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
+        "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
         "@types/diff-match-patch": "^1.0.36",
         "@types/node": "^25.9.4",
         "@vitejs/plugin-vue": "^6.0.7",

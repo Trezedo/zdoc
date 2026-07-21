@@ -4,5 +4,17 @@
     "tabWidth": 4,
     "singleQuote": false,
     "printWidth": 100,
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+    "importOrder": [
+        "^(?:@[^/]+/|[^@./])",
+        "",
+        "^@/(.*)$",
+        "^@/styles/",
+        "",
+        "^[./]",
+        "",
+        ".(?:css|scss|sass)$"
+    ],
+    "importOrderSafeSideEffects": ["^@/styles/"]
 }
