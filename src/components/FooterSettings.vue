@@ -31,21 +31,28 @@
 
             <div class="flex flex-col col-span-2">
                 <label class="text-sm font-medium text-gray-700 mb-2">位置：</label>
-                <n-radio-group
-                    v-model:value="localConfig.position"
-                    size="small"
-                    class="flex flex-wrap justify-center gap-3"
-                >
-                    <n-radio
+                <div class="grid grid-cols-5 gap-2 justify-items-center">
+                    <div
                         v-for="opt in positionOptions"
                         :key="opt.value"
-                        :value="opt.value"
-                        class="flex items-center gap-1"
+                        class="flex flex-col items-center justify-center cursor-pointer border rounded-lg p-3 w-full min-w-0 transition-colors hover:border-blue-400"
+                        :class="[
+                            localConfig.position === opt.value
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-300 bg-white',
+                        ]"
+                        @click="localConfig.position = opt.value"
                     >
-                        <img :src="opt.icon" class="h-10 object-contain" :alt="opt.label" />
-                        <span class="text-sm align-middle">{{ opt.label }}</span>
-                    </n-radio>
-                </n-radio-group>
+                        <img
+                            :src="opt.icon"
+                            class="h-10 max-w-full object-contain"
+                            :alt="opt.label"
+                        />
+                        <span class="text-sm text-gray-700 truncate max-w-full">
+                            {{ opt.label }}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -54,16 +61,18 @@
 <script setup lang="ts">
 import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_FOOTER_CONFIG } from "@/config/defaults";
-import type { FooterConfig } from "@/jsa/types";
+import type { FooterConfig, PagenumPosition } from "@/jsa/types";
 import { getChineseFontSizeName } from "@/utils/fonts";
 
-// 位置选项（图标直接放在 public/images/ 目录下）
-const positionOptions = [
-    { label: "左侧", value: "left", icon: "/images/Pagenum_BottomLeft.svg" },
-    { label: "居中", value: "middle", icon: "/images/Pagenum_BottomMid.svg" },
-    { label: "右侧", value: "right", icon: "/images/Pagenum_BottomRight.svg" },
-    { label: "内侧", value: "inside", icon: "/images/Pagenum_BottomInside.svg" },
-    { label: "外侧", value: "outside", icon: "/images/Pagenum_BottomOutside.svg" },
+// 位置选项（图标放在 public/images/ 目录下）
+// 注意路径不能直接以 "/" 开头，否则 "file://"　协议会将其解析为盘符根目录
+// 但在 img 标签中直接写的 src 反而不需要： <img src="/images/header.svg"/>
+const positionOptions = <{ label: string; value: PagenumPosition; icon: string }[]>[
+    { label: "内侧", value: "inside", icon: "./images/Pagenum_BottomInside.svg" },
+    { label: "外侧", value: "outside", icon: "./images/Pagenum_BottomOutside.svg" },
+    { label: "左侧", value: "left", icon: "./images/Pagenum_BottomLeft.svg" },
+    { label: "居中", value: "middle", icon: "./images/Pagenum_BottomMid.svg" },
+    { label: "右侧", value: "right", icon: "./images/Pagenum_BottomRight.svg" },
 ];
 
 const props = defineProps<{
@@ -96,8 +105,4 @@ watch(
 const { chineseFontOptions } = useFonts();
 </script>
 
-<style lang="css">
-.n-radio .n-radio__label {
-    text-align: center;
-}
-</style>
+<style lang="css"></style>
