@@ -1,11 +1,14 @@
 import App from "@/App.vue";
 import { setupGlobalEnum } from "@/jsa/global";
+import { setupRibbonBindings } from "@/jsa/ribbon/actions";
 import { router } from "@/router/";
 import "@/styles/main.css";
 
 import { registerDirectives } from "./directives";
 import { useGovDocConfigStore } from "./stores/govDocConfig";
 import { setupGlobalErrorHandler } from "./utils/globalErrorHandler";
+
+setupRibbonBindings();
 
 const app = createApp(App);
 const pinia = createPinia();
