@@ -7,7 +7,7 @@ import {
     separator,
     splitButton,
     tab,
-} from "vite-plugin-ribbon";
+} from "#vite-plugin-ribbon";
 
 export const xmlConfig = RibbonBuilder.create({
     onLoad: "onAddinLoad",

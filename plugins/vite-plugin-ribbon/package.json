@@ -2,22 +2,22 @@
     "name": "vite-plugin-ribbon",
     "version": "1.0.0",
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./src/index.ts",
+    "types": "./src/index.ts",
     "scripts": {
         "build": "tsc"
     },
     "exports": {
         ".": {
             "import": {
-                "types": "./dist/index.d.ts",
-                "default": "./dist/index.js"
+                "types": "./src/index.ts",
+                "default": "./src/index.ts"
             }
         },
         "./factory": {
             "import": {
-                "types": "./dist/factory.d.ts",
-                "default": "./dist/factory.js"
+                "types": "./src/ribbon/factory.ts",
+                "default": "./src/ribbon/factory.ts"
             }
         }
     },
