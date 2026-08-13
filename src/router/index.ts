@@ -1,4 +1,6 @@
-import { createRouter, createWebHashHistory, type RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
+
+import { createRouter, createWebHashHistory } from "vue-router";
 import { routes as fileRoutes, handleHotUpdate } from "vue-router/auto-routes";
 
 const customRoutes: RouteRecordRaw[] = [

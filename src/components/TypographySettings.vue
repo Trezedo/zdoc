@@ -181,10 +181,11 @@
 </template>
 
 <script setup lang="ts">
+import type { TypographyConfig } from "@/jsa/types";
+
 import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_TYPO_CONFIG } from "@/config/defaults";
 import { setupBodyStyle, setupTitleStyle } from "@/jsa/commands/govDoc";
-import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { getChineseFontSizeName } from "@/utils/fonts";
 

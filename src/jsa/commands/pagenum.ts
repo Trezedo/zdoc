@@ -1,6 +1,6 @@
-import { DEFAULT_FOOTER_CONFIG } from "@/config/defaults";
-
 import type { FooterConfig } from "../types";
+
+import { DEFAULT_FOOTER_CONFIG } from "@/config/defaults";
 
 /**
  * 配置形状（文本框）的填充、边框、位置及文字环绕方式。

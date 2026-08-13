@@ -58,9 +58,10 @@
 </template>
 
 <script setup lang="ts">
+import type { HeaderConfig } from "@/jsa/types";
+
 import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_HEADER_CONFIG } from "@/config/defaults";
-import type { HeaderConfig } from "@/jsa/types";
 import { getChineseFontSizeName } from "@/utils/fonts";
 
 const positionOptions = [

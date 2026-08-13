@@ -1,3 +1,11 @@
+import type {
+    FooterConfig,
+    GovDocConfig,
+    HeaderConfig,
+    PageLayoutConfig,
+    TypographyConfig,
+} from "@/jsa/types";
+
 import { z } from "zod";
 
 import {
@@ -6,13 +14,6 @@ import {
     DEFAULT_PAGE_LAYOUT_CONFIG,
     DEFAULT_TYPO_CONFIG,
 } from "@/config/defaults";
-import type {
-    FooterConfig,
-    GovDocConfig,
-    HeaderConfig,
-    PageLayoutConfig,
-    TypographyConfig,
-} from "@/jsa/types";
 
 const PageLayoutSchema = z
     .object({

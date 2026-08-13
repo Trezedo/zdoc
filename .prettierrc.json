@@ -7,7 +7,10 @@
     "trailingComma": "all",
     "plugins": ["@ianvs/prettier-plugin-sort-imports"],
     "importOrder": [
-        "^(?:@[^/]+/|[^@./])",
+        "<TYPES>",
+        "<TYPES>^[./]",
+        "",
+        "<THIRD_PARTY_MODULES>",
         "",
         "^@/(.*)$",
         "^@/styles/",

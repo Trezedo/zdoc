@@ -60,9 +60,10 @@
 </template>
 
 <script setup lang="ts">
+import type { PageLayoutConfig } from "@/jsa/types";
+
 import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/config/defaults";
 import { setPageLayout } from "@/jsa/commands/document";
-import type { PageLayoutConfig } from "@/jsa/types";
 
 const props = defineProps<{
     modelValue: PageLayoutConfig;

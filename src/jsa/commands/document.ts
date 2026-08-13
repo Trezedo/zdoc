@@ -1,6 +1,7 @@
+import type { PageLayoutConfig } from "@/jsa/types";
+
 import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/config/defaults";
 import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
-import type { PageLayoutConfig } from "@/jsa/types";
 import { setItem } from "@/jsa/utils/storage";
 import { handleAttachments } from "@/utils";
 

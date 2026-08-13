@@ -59,9 +59,10 @@
 </template>
 
 <script setup lang="ts">
+import type { FooterConfig, PagenumPosition } from "@/jsa/types";
+
 import { useFonts } from "@/composables/useFonts";
 import { DEFAULT_FOOTER_CONFIG } from "@/config/defaults";
-import type { FooterConfig, PagenumPosition } from "@/jsa/types";
 import { getChineseFontSizeName } from "@/utils/fonts";
 
 // 位置选项（图标放在 public/images/ 目录下）

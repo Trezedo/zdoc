@@ -1,7 +1,9 @@
-import { DEFAULT_TYPO_CONFIG } from "@/config/defaults";
 import type { SimpleFontConfig, TopicBoldMode, TypographyConfig } from "@/jsa/types";
+import type { ParaInfo } from "@/utils";
+
+import { DEFAULT_TYPO_CONFIG } from "@/config/defaults";
 import { withUndoRecord } from "@/jsa/utils/document";
-import { findMainTitleBlocks, isSubtitleLine, type ParaInfo } from "@/utils";
+import { findMainTitleBlocks, isSubtitleLine } from "@/utils";
 
 import { formatAttachments } from "./document";
 

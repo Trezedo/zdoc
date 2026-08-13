@@ -1,3 +1,5 @@
+import type { TypographyConfig } from "@/jsa/types";
+
 import {
     convertIndentToSpace,
     convertSpaceToIndent,
@@ -9,7 +11,6 @@ import { convertNumberingToStatic } from "@/jsa/commands/field";
 import { quickFormat } from "@/jsa/commands/govDoc";
 import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
 import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
-import type { TypographyConfig } from "@/jsa/types";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { getItem, setItem } from "@/jsa/utils/storage";
 import { useGovDocConfigStore } from "@/stores/govDocConfig";

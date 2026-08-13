@@ -1,3 +1,11 @@
+import type {
+    FooterConfig,
+    GovDocConfig,
+    HeaderConfig,
+    PageLayoutConfig,
+    TypographyConfig,
+} from "@/jsa/types";
+
 import {
     DEFAULT_FOOTER_CONFIG,
     DEFAULT_HEADER_CONFIG,
@@ -6,13 +14,6 @@ import {
     getDefaultConfigFull,
 } from "@/config/defaults";
 import { validateGovDocConfig } from "@/config/validator";
-import type {
-    FooterConfig,
-    GovDocConfig,
-    HeaderConfig,
-    PageLayoutConfig,
-    TypographyConfig,
-} from "@/jsa/types";
 import { loadGovDocConfig, saveGovDocConfig } from "@/jsa/utils/storage";
 
 type GovDocConfigState = GovDocConfig & { loaded: boolean };
