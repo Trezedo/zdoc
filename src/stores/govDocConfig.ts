@@ -14,7 +14,7 @@ import {
     getDefaultConfigFull,
 } from "@/config/defaults";
 import { validateGovDocConfig } from "@/config/validator";
-import { loadGovDocConfig, saveGovDocConfig } from "@/jsa/utils/storage";
+import { loadGovDocConfigFromFile, saveGovDocConfigToFile } from "@/jsa/utils/filesSystem";
 
 type GovDocConfigState = GovDocConfig & { loaded: boolean };
 
@@ -32,7 +32,7 @@ export const useGovDocConfigStore = defineStore("govDocConfig", {
          * 从文件加载配置
          */
         loadFromFile() {
-            const saved = loadGovDocConfig();
+            const saved = loadGovDocConfigFromFile();
             if (saved) {
                 try {
                     const validated = validateGovDocConfig(saved);
@@ -61,7 +61,7 @@ export const useGovDocConfigStore = defineStore("govDocConfig", {
                 header: this.header,
                 footer: this.footer,
             };
-            return saveGovDocConfig(config);
+            return saveGovDocConfigToFile(config);
         },
 
         /**
