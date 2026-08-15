@@ -11,7 +11,7 @@
         "build:zip": "wpsjs build",
         "build:exe": "wpsjs build --exe",
         "preview": "vite preview",
-        "fmt": "prettier --write src/",
+        "fmt": "prettier --write src/ && prettier --write plugins/*/src/**/*.{js,ts}",
         "clear": "rimraf node_modules",
         "typecheck": "pnpm exec tsc --noEmit",
         "test": "vitest"

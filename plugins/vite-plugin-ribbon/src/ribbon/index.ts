@@ -1,9 +1,9 @@
 import fs from "fs/promises";
 import path from "path";
-
 import type { RibbonConfig } from "../common/typings.js";
-import { RibbonBuilder } from "./factory.js";
+
 import { logger } from "../common/index.js";
+import { RibbonBuilder } from "./factory.js";
 
 export async function writeRibbonXml(config: RibbonConfig, fileName: string): Promise<void> {
     const xmlContent = RibbonBuilder.render(config);

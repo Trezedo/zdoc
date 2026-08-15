@@ -1,9 +1,10 @@
 import type { Plugin } from "vite";
+import type { ImageTypeOptions, RibbonPluginOptions } from "./common/typings.js";
+
 import { FSWatcher } from "chokidar";
 
-import type { ImageTypeOptions, RibbonPluginOptions } from "./common/typings.js";
-import { writeRibbonXml } from "./ribbon/index.js";
 import { generateImageTypes, setupImageWatcher } from "./image/index.js";
+import { writeRibbonXml } from "./ribbon/index.js";
 
 export * from "./ribbon/factory.js";
 export * from "./common/typings.js";

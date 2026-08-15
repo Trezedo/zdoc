@@ -1,4 +1,4 @@
-import type { RibbonConfig, Control, Tab, Group } from "../common/typings.js";
+import type { Control, Group, RibbonConfig, Tab } from "../common/typings.js";
 
 function collectIdsFromControl(control: Control): string[] {
     switch (control.type) {

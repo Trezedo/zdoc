@@ -1,10 +1,11 @@
 import fs from "fs/promises";
 import path from "path";
+import type { ImageTypeOptions, RibbonConfig } from "../common/typings.js";
+
 import { watch } from "chokidar";
 
-import type { ImageTypeOptions, RibbonConfig } from "../common/typings.js";
-import { collectAllIds } from "../ribbon/collect-ids.js";
 import { logger } from "../common/index.js";
+import { collectAllIds } from "../ribbon/collect-ids.js";
 
 export async function generateImageTypes(
     root: string,
