@@ -1,5 +1,6 @@
 import { fileURLToPath, URL } from "node:url";
 
+import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
 import { ribbonPlugin } from "#vite-plugin-ribbon";
 import AutoImport from "unplugin-auto-import/vite";
@@ -60,23 +61,36 @@ export default defineConfig({
         Components({
             resolvers: [NaiveUiResolver()],
             dts: "src/components.d.ts",
+            // 仅扫描必要目录
+            dirs: ["src/components", "src/views"],
+            // 限制文件扩展名，只处理 .vue
+            extensions: ["vue"],
+            exclude: [/node_modules/, /\.test\.vue$/],
         }),
         // 加载项 UI 配置
         ribbonPlugin({ config: xmlConfig, fileName: "./public/ribbon.xml" }),
+
         bundleObfuscator({
             // 指定需要混淆的 chunk 名称（与 manualChunks 中定义的一致）
-            excludes: [], // 排除第三方库，但似乎效果不太理想，暂时放弃
+            excludes: ["polyfills", "rolldown-runtime", "vendor", "index"], // 排除第三方库，但似乎效果不太理想，暂时放弃
             options: {
                 unicodeEscapeSequence: true, // 字符串字面量 → Unicode 转义序列
-                transformObjectKeys: true, // 点语法 → 方括号语法
+                transformObjectKeys: false, // 点语法 → 方括号语法 启用后与 legacy 不兼容
                 stringArray: true, // 将所有字符串字面量提取到一个全局数组中，然后通过数组索引访问
                 // https://obfuscator.io/docs/basic-obfuscation/string-array
                 stringArrayEncoding: ["base64", "rc4"], // 对 stringArray 中存储的字符串进行编码
                 controlFlowFlattening: true, // 将代码的控制流（if/else, while, for 等）扁平化，打乱逻辑顺序，插入 switch 结构
-                deadCodeInjection: false, // 向代码中随机注入永远不会执行的死代码
-                selfDefending: true, // 如果混淆后的代码被格式化、美化或调试，它会故意触发错误或进入死循环
-                debugProtection: true, // 禁止在浏览器开发工具中调试代码，尝试调试会触发错误
+                deadCodeInjection: true, // 随机注入死代码
+                selfDefending: true, // 开启后，代码被格式化则无法执行
+                debugProtection: true, // 让开发者工具的 debugger 功能无法使用
             },
+        }),
+        // legacy 通常放在最后
+        legacy({
+            targets: ["chrome 85"], // 指定目标浏览器版本
+            additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+            renderModernChunks: false, // 不生成现代版 chunk
+            renderLegacyChunks: true,
         }),
     ],
     resolve: {
