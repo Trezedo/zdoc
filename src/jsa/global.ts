@@ -49,7 +49,12 @@ const EnumRegistryArr = defineEnumRegistryArr([
     "WdWrapType",
 ]);
 
-export function setupGlobalEnum() {
+/**
+ * 全局注册常用 WPS 枚举
+ *
+ * 使得可以像 JSA 编辑器中那样直接使用枚举
+ */
+export function setupGlobalEnum(): void {
     // 检查是否在 WPS 加载项环境中
     if (typeof wps === "undefined") {
         console.warn("当前不在 WPS 加载项环境中，请在 WPS 加载项中运行以确保功能正常");

@@ -7,6 +7,10 @@ export function cmToPoints(cm: number): number {
     return cm * (72 / 2.54);
 }
 
+const LINE_MAX_CHARS = 28; // 一行最大中文字数（基于默认页边距和字号）
+const ATTACHMENT_ALIGN_SINGLE = 5; // 单附件对齐空格数
+const ATTACHMENT_ALIGN_MULTI = 6; // 多附件对齐空格数（多一个序号）
+
 /**
  * 处理附件对齐
  * - 使用 `\n` 换行，Word 内部会转为 `\r`；
@@ -28,7 +32,7 @@ export function handleAttachments(content: string) {
     const cleanName = (raw: string) => {
         return raw
             .replace(/\n+/g, " ") // 换行变空格
-            .replace(/\s+/g, "") // 多个空格合并为一个
+            .replace(/\s+/g, "") // 删除连续空白字符
             .trim();
     };
     names = names.map(cleanName);
@@ -40,9 +44,12 @@ export function handleAttachments(content: string) {
         return 1;
     }
 
+    const zhSpace = "\u3000"; // 中文空格
+    const flIndent = zhSpace.repeat(2); // 首行缩进（空格表示）
     // 通用折行函数
-    function wrapName(name: string, maxWidth: number, alignSpacesCount: number) {
-        const ALIGN = "　".repeat(alignSpacesCount);
+    function wrapName(name: string, alignSpacesCount: number) {
+        const maxWidth = LINE_MAX_CHARS - alignSpacesCount - 1; // 多减1个字符，因为有时加粗字体会导致换行
+        const ALIGN = zhSpace.repeat(alignSpacesCount);
         const lines = [];
         let currentLine = "";
         let currentWidth = 0;
@@ -72,17 +79,17 @@ export function handleAttachments(content: string) {
     // 情况1：单个附件（无序号，或只有一个“附件：”块）
     if (names.length === 1) {
         // 单附件：宽度22，对齐空格5（对应“　　附件：”的长度）
-        const wrapped = wrapName(names[0], 22, 5);
-        return "　　附件：" + wrapped;
+        const wrapped = wrapName(names[0], ATTACHMENT_ALIGN_SINGLE);
+        return flIndent + "附件：" + wrapped;
     }
 
     // 情况2：多个附件（有序号）
-    let output = "　　附件：" + "1.\u2005" + wrapName(names[0], 21, 6);
+    let output = flIndent + "附件：" + "1.\u2005" + wrapName(names[0], ATTACHMENT_ALIGN_MULTI);
     for (let i = 2; i <= names.length; i++) {
         const name = names[i - 1];
         if (!name) continue;
-        const prefix = "　".repeat(5) + i + ".\u2005";
-        output += "\n" + prefix + wrapName(name, 21, 6);
+        const prefix = zhSpace.repeat(5) + i + ".\u2005";
+        output += "\n" + prefix + wrapName(name, ATTACHMENT_ALIGN_MULTI);
     }
     // 如果最后一个名称原本以换行结尾，保持输出末尾换行（原逻辑保留）
     if (names[names.length - 1].endsWith("\n")) output += "\n";

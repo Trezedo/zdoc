@@ -10,8 +10,15 @@ import { formatAttachments } from "./document";
 // 注意：同段内有多个需要匹配的才加 g 标志
 const salutationRegex = /^[^《》〔〕：]*：\r$/; // 抬头；发文事由可能包含转发上级的文件（书名号、六角括号）
 const h1Regex = /^[一二三四五六七八九十]+、.*?(?:。|[^；;]\r)/; // 以分号结尾视为列表而不是层级标题
-const h2Regex = /^（[一二三四五六七八九十]+）.{1,23}?(?:。|[^；;]\r)/;
-const h3Regex = /^[0-9]{1,2}\..{1,23}?(?:。|[^；;]\r)/; // 23 为一行能容纳的字数
+const h2Regex = /^（[一二三四五六七八九十]+）.*?(?:。|[^；;]\r)/;
+/**
+ * 匹配三级标题正则表达式
+ * - `(?!.*：)` 为先行断言，见以下链接
+ * - `23` 为一行能容纳的字数：28 - 2（首缩）- 2（"00." 占宽）- 1（考虑标点压缩）
+ * - 一二级标题暂不考虑限制 23 字，因为有的材料中会超过一行
+ * @see https://mdn.org.cn/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Lookahead_assertion
+ */
+const h3Regex = /^(?!.*：)[0-9]{1,2}\..{1,23}?(?:。|[^；;]\r)/;
 const topicRegex = /(?<=^|[。？！])[一二三四五六七八九十][是要].*?。/g; // 小标题
 const topicPrefixRegex = /^[一二三四五六七八九十][是要]/;
 const dateRegex = /^[0-9X]{4}年[0-9 X]{1,2}月[0-9 X]{1,2}日\s*\r/; // 落款日期
@@ -22,10 +29,12 @@ export const attachmentWildcards = "^m附件[0-9]{1,}^p"; // 附件通配符
 export const attachmentListRegex = /[ \u3000]*附件[：:]\s*([\s\S]+?)(?=[\r\n]{2}|\f|$)/g;
 export const attachmentListWildcards = "附件[:：]*^p^p";
 
-const salutationExcludeRegex = /贯彻|落实|关于|根据|如下|下列|包括|。/; // 抬头黑名单
+const salutationExcludeRegex = /贯彻|落实|关于|根据|如下|以下|下列|包括|。/; // 抬头黑名单
 const salutationOrgDeptRegex =
     /省|自治区|市|县|乡|镇|村|社区|委.*?(?:部|办)|局|工会|妇联|企业|党组织|大学/; // 抬头白名单
 const salutationEachUnitRegex = /各.*?(?:单位|部门)/;
+const salutationGreetingRegex = /尊敬的|敬爱的|亲爱的|同志们/; // 敬语、称呼
+const salutationJobTitleRegex = /副?书记|副?主任|副?参谋长|副?政委/; // 职务名称
 
 /**
  * 应用简单的字体配置
@@ -135,14 +144,18 @@ function processSalutation(range: Wps.Range, config: TypographyConfig) {
     if (salutationExcludeRegex.test(text)) return;
 
     const words = text.split("、");
-    const pattern = words.some(
-        (w) => salutationOrgDeptRegex.test(w) || salutationEachUnitRegex.test(w),
-    );
 
-    // 短文本（≤10个字符）且不含排除词，直接视为抬头
-    if (!pattern) {
-        if (text.length > 10) return;
-    }
+    const salutationPatterns = [
+        salutationOrgDeptRegex,
+        salutationEachUnitRegex,
+        salutationGreetingRegex,
+        salutationJobTitleRegex,
+    ];
+    const hasSalutationKeyword = words.some((word) =>
+        salutationPatterns.some((pattern) => pattern.test(word)),
+    );
+    if (!hasSalutationKeyword) return;
+
     const font = range.Font;
     font.NameFarEast = config.salutation.font || config.main.zh;
     font.Bold = config.salutation.bold ? msoTrue : msoFalse;
@@ -177,7 +190,10 @@ function boldTopicSentence(range: Wps.Range, mode: TopicBoldMode) {
     const prefixMatch = text.match(topicPrefixRegex);
     if (prefixMatch) {
         const prefix = prefixMatch[0];
-        const prefixRange = range.Document.Range(range.Start, range.Start + prefix.length);
+        const doc = range.Document;
+        const start = range.Start;
+        const end = start + prefix.length;
+        const prefixRange = doc.Range(start, end);
         prefixRange.Font.Bold = msoTrue;
     }
 }
@@ -206,6 +222,22 @@ interface RegexMatcher {
 }
 
 /**
+ * 层级标题匹配工厂函数
+ *
+ * 减少重复代码生成，传入 applyHierarchicalStyles 使用
+ * @param config 配置
+ */
+function createMatchers(config: TypographyConfig): RegexMatcher[] {
+    return [
+        { regex: salutationRegex, handler: (r) => processSalutation(r, config) },
+        { regex: h1Regex, handler: (r) => applySimpleFontConfig(r, config.h1) },
+        { regex: h2Regex, handler: (r) => applySimpleFontConfig(r, config.h2) },
+        { regex: h3Regex, handler: (r) => applySimpleFontConfig(r, config.h3) },
+        { regex: topicRegex, handler: (r) => boldTopicSentence(r, config.topicBoldMode) },
+    ];
+}
+
+/**
  * 对单个段落应用层级标题样式（抬头、一/二/三级标题、小标题）
  * @param range 段落 Range
  * @param text 段落文本
@@ -215,25 +247,19 @@ interface RegexMatcher {
 function applyHierarchicalStyles(
     range: Wps.Range,
     text: string,
-    config: TypographyConfig,
+    matchers: RegexMatcher[],
 ): boolean {
-    // 优先级匹配（只执行第一个匹配的）
-    const matchers: RegexMatcher[] = [
-        { regex: salutationRegex, handler: (r) => processSalutation(r, config) },
-        { regex: h1Regex, handler: (r) => applySimpleFontConfig(r, config.h1) },
-        { regex: h2Regex, handler: (r) => applySimpleFontConfig(r, config.h2) },
-        { regex: h3Regex, handler: (r) => applySimpleFontConfig(r, config.h3) },
-        { regex: topicRegex, handler: (r) => boldTopicSentence(r, config.topicBoldMode) },
-    ];
+    const doc = range.Document;
+    const offset = range.Start;
+    const sharedRange = doc.Range(0, 0); // 创建一个共用 Range
 
     let applied = false;
     for (const { regex, handler } of matchers) {
         for (const match of iterateMatches(text, regex)) {
-            const subRange = range.Document.Range(
-                range.Start + match.index,
-                range.Start + match.index + match[0].length,
-            );
-            handler(subRange);
+            const start = offset + match.index;
+            const end = start + match[0].length;
+            sharedRange.SetRange(start, end); // 复用，而非 doc.Range(s, e) 创建新对象
+            handler(sharedRange);
             applied = true;
         }
     }
@@ -266,6 +292,7 @@ function formatGovDoc(
 
     // 存储所有段落信息（索引与段落顺序一致）
     const paraInfos: ParaInfo[] = [];
+    const matchers = createMatchers(config);
 
     // ---------- 第一遍遍历：应用正文样式 + 层级标题 ----------
     for (let i = 1; i <= count; i++) {
@@ -292,49 +319,48 @@ function formatGovDoc(
         paraInfos.push(info);
 
         // 仅处理范围内且非表格的段落
-        if (isInRange && !isTable) {
-            // 应用正文样式
-            const curStyleName = (paraRange.Style as Wps.Style).NameLocal;
-            if (curStyleName !== mainStyleName) {
-                paraRange.Style = mainStyle;
-            }
+        if (!isInRange || isTable) continue;
 
-            // 应用层级标题（并记录是否匹配）
-            const level = applyHierarchicalStyles(paraRange, text, config);
-            if (level !== false) {
-                info.isHeading = true;
-            }
+        // 应用正文样式，避免重复应用相同样式
+        const curStyle = paraRange.Style as Wps.Style;
+        if (curStyle.NameLocal !== mainStyleName) {
+            paraRange.Style = mainStyle;
+        }
 
-            // 注：附件格式独立处理（保持原有逻辑）
-            // 这里可以保留原有的附件处理代码，或者交由后续统一处理
-            if (/^附件\s*[0-9]+/.test(text.trim())) {
-                paraRange.Font.Name = "黑体";
-                paraRange.Font.NameAscii = "Times New Roman";
-                paraRange.ParagraphFormat.CharacterUnitFirstLineIndent = 0;
-                paraRange.ParagraphFormat.FirstLineIndent = 0;
-            }
+        // 应用层级标题（并记录是否匹配）
+        const level = applyHierarchicalStyles(paraRange, text, matchers);
+        if (level !== false) {
+            info.isHeading = true;
+        }
+
+        // 注：附件格式独立处理（保持原有逻辑）
+        // 这里可以保留原有的附件处理代码，或者交由后续统一处理
+        if (/^附件\s*[0-9]+/.test(text.trim())) {
+            paraRange.Font.Name = "黑体";
+            paraRange.Font.NameAscii = "Times New Roman";
+            paraRange.ParagraphFormat.CharacterUnitFirstLineIndent = 0;
+            paraRange.ParagraphFormat.FirstLineIndent = 0;
         }
     }
 
     // ---------- 第二遍遍历：查找并应用主标题 ----------
-    if (!range) {
-        const blocks = findMainTitleBlocks(paraInfos);
-        for (const [start, end] of blocks) {
-            for (let idx = start; idx <= end; idx++) {
-                const para = paras.Item(idx + 1);
-                const rng = para.Range;
-                if ((rng.Style as Wps.Style).NameLocal !== titleStyleName) {
-                    rng.Style = titleStyle;
-                }
-                const text = rng.Text;
-                if (isSubtitleLine(text)) {
-                    const font = rng.Font;
-                    font.NameFarEast = "楷体_GB2312";
-                    font.NameAscii = "Times New Roman";
-                    font.Size = 16;
-                    font.Bold = msoFalse;
-                }
+    if (range) return; // 如果不传入范围，视为全文，需要查找标题
+
+    const blocks = findMainTitleBlocks(paraInfos);
+    for (const [start, end] of blocks) {
+        for (let idx = start; idx <= end; idx++) {
+            const para = paras.Item(idx + 1);
+            const rng = para.Range;
+            if ((rng.Style as Wps.Style).NameLocal !== titleStyleName) {
+                rng.Style = titleStyle;
             }
+            const text = rng.Text;
+            if (!isSubtitleLine(text)) continue;
+            const font = rng.Font;
+            font.NameFarEast = "楷体_GB2312";
+            font.NameAscii = "Times New Roman";
+            font.Size = 16;
+            font.Bold = msoFalse;
         }
     }
 }
@@ -371,7 +397,8 @@ function processMultiLineTitle(doc: Wps.Document = ActiveDocument) {
             currentFont.Size === nextFont.Size
         ) {
             const rng = currentPara.Range;
-            if (rng.Text.endsWith("\r")) rng.Text = rng.Text.slice(0, -1) + "\v";
+            if (!rng.Text.endsWith("\r")) continue;
+            rng.Text = rng.Text.slice(0, -1) + "\v";
         }
     }
 }
