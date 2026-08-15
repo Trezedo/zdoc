@@ -9,7 +9,7 @@ import { defineConfig } from "vite";
 import bundleObfuscator from "vite-plugin-bundle-obfuscator";
 import VueRouter from "vue-router/vite";
 
-import { xmlConfig } from "./src/jsa/ribbon/xmlConfig";
+import { xmlConfig } from "./src/jsa/ribbon/xmlConfig.ts";
 
 export default defineConfig({
     base: "./",

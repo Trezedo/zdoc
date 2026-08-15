@@ -1,4 +1,3 @@
-import { render } from "./renderer.js";
 import type {
     Button,
     CheckBox,
@@ -16,6 +15,8 @@ import type {
     Tab,
     ToggleButton,
 } from "../common/typings.js";
+
+import { render } from "./renderer.js";
 
 type BaseControlOptions = {
     size?: string;
@@ -41,19 +42,29 @@ function getBaseOptions<T extends BaseControlOptions>(options: T): T {
 export function tab(
     label: string,
     id: string,
-    groups: Group[],
-    options?: Partial<Omit<Tab, "id" | "label" | "groups">>,
+    optionsOrGroups?: Partial<Omit<Tab, "id" | "label" | "groups">> | Group[],
+    groups?: Group[],
 ): Tab {
+    let opts: Partial<Omit<Tab, "id" | "label" | "groups">> = {};
+    let groupList: Group[] = [];
+
+    if (Array.isArray(optionsOrGroups)) {
+        groupList = optionsOrGroups;
+    } else if (optionsOrGroups) {
+        opts = optionsOrGroups;
+        groupList = groups || [];
+    }
+
     return {
         id,
         label,
-        groups,
-        insertBeforeMso: options?.insertBeforeMso,
-        insertAfterMso: options?.insertAfterMso,
-        insertBeforeQ: options?.insertBeforeQ,
-        insertAfterQ: options?.insertAfterQ,
-        getVisible: options?.getVisible,
-        visible: options?.visible,
+        groups: groupList,
+        insertBeforeMso: opts?.insertBeforeMso,
+        insertAfterMso: opts?.insertAfterMso,
+        insertBeforeQ: opts?.insertBeforeQ,
+        insertAfterQ: opts?.insertAfterQ,
+        getVisible: opts?.getVisible,
+        visible: opts?.visible,
     };
 }
 

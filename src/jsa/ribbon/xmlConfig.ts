@@ -12,7 +12,7 @@ import {
 export const xmlConfig = RibbonBuilder.create({
     // onLoad: "onAddinLoad", // 实测无效果，删除
     tabs: [
-        tab("公文助手(&Z)", "wpsDocHelperTab", [
+        tab("公文助手(&Z)", "wpsDocHelperTab", { insertAfterMso: "TabPageLayoutWord" }, [
             group("文档处理", "grpDocument", [
                 // splitButton 中 menu 下的所有按钮，supertip 和 screentip 都不生效
                 // 且使用 screentip 会作为标题，整体显示在工具栏下方而不是鼠标位置

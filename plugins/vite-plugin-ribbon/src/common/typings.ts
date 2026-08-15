@@ -3,11 +3,23 @@ export interface RibbonConfig {
     tabs: Tab[];
 }
 
+// https://open.wps.cn/documents/app-integration-dev/wps365/client/wpsoffice/jsapi/idmso-list/wps-idmso-reference
+export type WordTabMsoID =
+    | "TabHome" // “开始”选项卡
+    | "TabInsert" // “插入”选项卡
+    | "TabPageLayoutWord" // “页面布局”选项卡
+    | "TabReferences" // “引用”选项卡
+    | "TabReviewWord" // “审阅”选项卡
+    | "TabViewWord" // “视图”选项卡
+    | "TabDeveloper"; // “工具”选项卡
+
+export type TabMsoID = WordTabMsoID | (string & {});
+
 export interface Tab {
     id: string;
     label: string;
-    insertBeforeMso?: string;
-    insertAfterMso?: string;
+    insertBeforeMso?: TabMsoID;
+    insertAfterMso?: TabMsoID;
     insertBeforeQ?: string;
     insertAfterQ?: string;
     getVisible?: string;
@@ -18,8 +30,8 @@ export interface Tab {
 export interface Group {
     id?: string;
     label: string;
-    insertBeforeMso?: string;
-    insertAfterMso?: string;
+    insertBeforeMso?: TabMsoID;
+    insertAfterMso?: TabMsoID;
     insertBeforeQ?: string;
     insertAfterQ?: string;
     getVisible?: string;
