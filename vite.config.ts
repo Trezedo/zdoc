@@ -1,4 +1,5 @@
 import { fileURLToPath, URL } from "node:url";
+
 import vue from "@vitejs/plugin-vue";
 import { ribbonPlugin } from "#vite-plugin-ribbon";
 import AutoImport from "unplugin-auto-import/vite";
@@ -13,13 +14,25 @@ import { xmlConfig } from "./src/jsa/ribbon/xmlConfig";
 export default defineConfig({
     base: "./",
     build: {
-        rollupOptions: {
+        rolldownOptions: {
             output: {
-                manualChunks(id) {
-                    // if (id.includes("/views/")) return "sfc";
-                    // if (id.includes(".ts")) return "core";
-                    // return null;
-                    return "all"; // 同类型 js, css 打包进同一个文件
+                codeSplitting: {
+                    groups: [
+                        { name: "vendor", test: "node_modules" },
+                        {
+                            name: "main",
+                            test: (id) => {
+                                const normalized = id.replace(/\\/g, "/");
+                                // 在 src 目录下的 ts/vue 文件
+                                const isInSrc = normalized.includes("/src/");
+                                const isTargetExt = /\.([jt]s|vue)$/.test(normalized);
+                                // 排除 dialogs 目录
+                                const isInDialogs = normalized.includes("/components/dialogs/");
+
+                                return isInSrc && !isInDialogs && isTargetExt;
+                            },
+                        },
+                    ],
                 },
             },
         },

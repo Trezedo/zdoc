@@ -15,7 +15,6 @@ import { toggleTaskPane } from "@/jsa/ribbon/taskPane";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { STORAGE_KEYS } from "@/jsa/utils/storage";
 import { useGovDocConfigStore } from "@/stores/govDocConfig";
-import { getRouterUrl } from "@/utils";
 
 interface RibbonAction {
     (): void;
@@ -92,14 +91,8 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
         }
     },
     btnClearNonBuiltinStyles: () => {
-        deleteNonBuiltInStyles();
-        Application.ShowDialog(
-            getRouterUrl("/msg"),
-            "",
-            400 * window.devicePixelRatio,
-            400 * window.devicePixelRatio,
-            true,
-        );
+        const msg = deleteNonBuiltInStyles();
+        alert(msg);
     },
     btnRemoveShading: () => withUndoRecord("清除底纹背景", removeShadingBackground),
     btnHeaderFooter: () => toggleTaskPane(STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID),
@@ -192,22 +185,6 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     },
 };
 
-function onAddinLoad(ribbonUI: Kso.RibbonUI): boolean {
-    if (typeof Application.ribbonUI !== "object") {
-        // @ts-ignore
-        Application.ribbonUI = ribbonUI;
-    }
-    wps.ApiEvent.AddApiEventListener("WindowSelectionChange", () => {
-        try {
-            Application.ribbonUI.InvalidateControl("btnIsEnabled");
-        } catch (e) {
-            console.error("刷新按钮状态失败", e);
-        }
-    });
-
-    return true;
-}
-
 function onAction(control: Kso.RibbonControl): boolean {
     const eleId = control.Id as RibbonControlId;
     const handler = actionHandlers[eleId];
@@ -257,7 +234,6 @@ function onGetLabel(control: Kso.RibbonControl): string {
  */
 export function setupRibbonBindings(): void {
     const bindings = {
-        onAddinLoad,
         onAction,
         getImage,
         onGetLabel,

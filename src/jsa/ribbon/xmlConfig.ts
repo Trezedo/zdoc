@@ -10,7 +10,7 @@ import {
 } from "#vite-plugin-ribbon";
 
 export const xmlConfig = RibbonBuilder.create({
-    onLoad: "onAddinLoad",
+    // onLoad: "onAddinLoad", // 实测无效果，删除
     tabs: [
         tab("公文助手(&Z)", "wpsDocHelperTab", [
             group("文档处理", "grpDocument", [

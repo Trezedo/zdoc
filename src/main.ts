@@ -1,27 +1,102 @@
-import App from "@/App.vue";
-import { setupGlobalEnum } from "@/jsa/global";
-import { setupRibbonBindings } from "@/jsa/ribbon/actions";
-import { router } from "@/router/";
 import "@/styles/main.css";
 
-import { registerDirectives } from "./directives";
-import { useGovDocConfigStore } from "./stores/govDocConfig";
-import { setupGlobalErrorHandler } from "./utils/globalErrorHandler";
+// 类型声明：让 TS 知道 import.meta.glob 的返回类型
+interface DialogModules {
+    [key: string]: () => Promise<{ default: import("vue").Component }>;
+}
 
-setupRibbonBindings();
+// 收集所有弹窗组件
+const dialogModules = import.meta.glob<{ default: import("vue").Component }>(
+    "@/components/dialogs/*.vue",
+) as DialogModules;
 
-const app = createApp(App);
-const pinia = createPinia();
+const urlParams = new URLSearchParams(window.location.search);
+const dialogType = urlParams.get("dialog");
 
-app.use(router);
-app.use(pinia);
+(
+    /**
+     * 启动函数，根据 URL 参数判断启动模式：
+     * - 弹窗模式：只加载 Vue + 对应组件，不加载主应用依赖 → 秒开。
+     * - 主应用模式：完整加载，并预加载所有弹窗以便二次打开秒开。
+     *
+     * 自执行异步函数，避免顶层 await
+     */
+    async function boot() {
+        if (dialogType) {
+            // ========== 弹窗模式（极速加载） ==========
+            // 注意：文件命名必须与 dialogType 完全一致（大小写敏感），建议统一小写
+            const loader = dialogModules[`/src/components/dialogs/${dialogType}.vue`];
+            if (!loader) {
+                console.error(`未知弹窗类型: ${dialogType}`);
+                document.body.innerHTML = `<div style="padding:20px;color:red;">未知弹窗类型: ${dialogType}</div>`;
+                return;
+            }
 
-registerDirectives(app);
-setupGlobalErrorHandler(app);
-setupGlobalEnum();
+            try {
+                // 同时加载 Vue 核心和弹窗组件
+                const [{ createApp }, module] = await Promise.all([import("vue"), loader()]);
+                const app = createApp(module.default);
+                app.mount("#app");
+            } catch (err) {
+                console.error(`加载弹窗失败: ${dialogType}`, err);
+            }
+        } else {
+            // ========== 主应用模式 ==========
+            try {
+                const [
+                    { createApp },
+                    { createPinia },
+                    { default: App },
+                    { registerDirectives },
+                    { setupRibbonBindings },
+                    { setupGlobalEnum },
+                    { router },
+                    { useGovDocConfigStore },
+                    { setupGlobalErrorHandler },
+                ] = await Promise.all([
+                    import("vue"),
+                    import("pinia"),
+                    import("@/App.vue"),
+                    import("@/directives"),
+                    import("@/jsa/ribbon/actions"),
+                    import("@/jsa/global"),
+                    import("@/router/"),
+                    import("@/stores/govDocConfig"),
+                    import("@/utils/globalErrorHandler"),
+                ]);
 
-app.mount("#app");
+                // 初始化 WPS 回调绑定
+                setupRibbonBindings();
 
-// 在应用挂载后加载配置
-const store = useGovDocConfigStore();
-store.loadFromFile();
+                const app = createApp(App);
+                const pinia = createPinia();
+                app.use(router);
+                app.use(pinia);
+                registerDirectives(app);
+                setupGlobalErrorHandler(app);
+
+                app.mount("#app");
+
+                setupGlobalEnum();
+
+                // 加载配置
+                const store = useGovDocConfigStore();
+                store.loadFromFile();
+
+                // 空闲时预加载所有弹窗组件（让浏览器缓存）
+                const preloadAllDialogs = () => {
+                    Object.values(dialogModules).forEach((load) => {
+                        load().catch((e) => console.warn("预加载弹窗失败:", e));
+                    });
+                };
+                if ("requestIdleCallback" in window) {
+                    window.requestIdleCallback(preloadAllDialogs, { timeout: 3000 });
+                } else {
+                    setTimeout(preloadAllDialogs, 1500);
+                }
+            } catch (err) {
+                console.error("主应用初始化失败:", err);
+            }
+        }
+    }
+)();

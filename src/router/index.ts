@@ -4,11 +4,8 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import { routes as fileRoutes, handleHotUpdate } from "vue-router/auto-routes";
 
 const customRoutes: RouteRecordRaw[] = [
-    {
-        path: "/msg",
-        name: "对话框",
-        component: () => import("@/components/MsgBox.vue"),
-    },
+    // 通过该方式打开的弹窗有白屏，延迟非常高，弃用
+    // { path: "/msg", name: "对话框", component: () => import("@/components/MsgBox.vue") },
 ];
 
 export const router = createRouter({
