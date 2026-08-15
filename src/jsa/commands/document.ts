@@ -1,8 +1,6 @@
 import type { PageLayoutConfig } from "@/jsa/types";
 
 import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/config/defaults";
-import { STORAGE_KEYS } from "@/jsa/ribbon/taskPane";
-import { setItem } from "@/jsa/utils/storage";
 import { handleAttachments } from "@/utils";
 
 import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
@@ -38,8 +36,8 @@ export function deleteNonBuiltInStyles(doc: Wps.Document = ActiveDocument) {
             s.Delete();
         }
     }
-    let msg = "共删除 " + nameArr.length + " 个样式：" + nameArr.join("、");
-    setItem(STORAGE_KEYS.MESSAGE, msg);
+    let msg = "共删除 " + nameArr.length + " 个样式：\n\n" + nameArr.join("、");
+    return msg;
 }
 
 /**

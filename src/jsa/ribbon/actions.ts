@@ -11,12 +11,11 @@ import { convertNumberingToStatic } from "@/jsa/commands/field";
 import { quickFormat } from "@/jsa/commands/govDoc";
 import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
 import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
+import { toggleTaskPane } from "@/jsa/ribbon/taskPane";
 import { withUndoRecord } from "@/jsa/utils/document";
-import { getItem, setItem } from "@/jsa/utils/storage";
+import { STORAGE_KEYS } from "@/jsa/utils/storage";
 import { useGovDocConfigStore } from "@/stores/govDocConfig";
 import { getRouterUrl } from "@/utils";
-
-import { STORAGE_KEYS, toggleTaskPane } from "./taskPane";
 
 interface RibbonAction {
     (): void;
@@ -159,18 +158,12 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnNumberToStatic: convertNumberingToStatic,
     btnViewMailSource: () => {
         const res = getMailMergeSourcePath();
-        setItem(
-            STORAGE_KEYS.MESSAGE,
-            res.error ||
-                `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""}`,
-        );
-        Application.confirm(
-            res.success
-                ? `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${
-                      res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""
-                  }`
-                : res.error,
-        );
+        const msg = res.success
+            ? `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${
+                  res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""
+              }`
+            : res.error;
+        Application.confirm(msg);
     },
     btnUpdateFiled: () => {
         const doc = ActiveDocument;
@@ -241,11 +234,8 @@ function getImage(control: Kso.RibbonControl): string {
 }
 
 function onGetEnabled(control: Kso.RibbonControl): boolean {
-    const eleId = control.Id;
+    const eleId = control.Id as RibbonControlId;
     switch (eleId) {
-        case "btnShowDialog":
-        case "btnShowTaskPane":
-            return !!getItem(STORAGE_KEYS.ENABLE_FLAG);
         default:
             return true;
     }

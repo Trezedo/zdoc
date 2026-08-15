@@ -1,4 +1,4 @@
-import { getItem, setItem } from "./storage";
+import { getItem, setItem, STORAGE_KEYS } from "./storage";
 
 /**
  * 正则查找处理
@@ -71,7 +71,7 @@ export function showFolderPicker(
     const doc = ActiveDocument;
     let folderDialog = Application.FileDialog(msoFileDialogFolderPicker);
 
-    let lastPath = getItem("LastSelectedFolder");
+    let lastPath = getItem(STORAGE_KEYS.LAST_SELECTED_FOLDER);
     let initialPath: string;
 
     if (!!lastPath) {
@@ -90,7 +90,7 @@ export function showFolderPicker(
         return null;
     }
     let selectedPath = folderDialog.SelectedItems.Item(1);
-    setItem("LastSelectedFolder", selectedPath);
+    setItem(STORAGE_KEYS.LAST_SELECTED_FOLDER, selectedPath);
     return selectedPath;
 }
 
