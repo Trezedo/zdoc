@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 
 import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
-import { ribbonPlugin } from "#vite-plugin-ribbon";
+import { wpsEnhancePlugin } from "#vite-plugin-wps-enhance";
 import AutoImport from "unplugin-auto-import/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
@@ -67,7 +67,9 @@ export default defineConfig({
             exclude: [/node_modules/, /\.test\.vue$/],
         }),
         // 加载项 UI 配置
-        ribbonPlugin({ config: xmlConfig, fileName: "./public/ribbon.xml" }),
+        wpsEnhancePlugin({
+            ribbon: { config: xmlConfig, fileName: "./public/ribbon.xml" },
+        }),
 
         bundleObfuscator({
             // 指定需要混淆的 chunk 名称（与 manualChunks 中定义的一致）

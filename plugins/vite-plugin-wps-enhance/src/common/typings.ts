@@ -187,3 +187,22 @@ export interface RibbonPluginOptions {
     config: RibbonConfig;
     fileName?: string;
 }
+
+/**
+ * Ribbon XML 生成配置。
+ */
+export interface RibbonOptions {
+    config: RibbonConfig;
+    /** 输出 ribbon.xml 的路径，默认 `ribbon.xml` */
+    fileName?: string;
+}
+
+/**
+ * `vite-plugin-wps-enhance` 插件配置。
+ *
+ * - `ribbon`: Ribbon XML 与图片类型声明生成；不传则跳过。
+ * - `enum`: 枚举导出文件生成；不传则跳过。
+ */
+export interface WpsEnhanceOptions {
+    ribbon?: RibbonOptions;
+}

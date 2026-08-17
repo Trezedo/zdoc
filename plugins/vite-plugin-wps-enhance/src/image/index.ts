@@ -26,7 +26,7 @@ export async function generateImageTypes(
             logger.warn(`No images found in ${imagesAbsolutePath}`);
         }
 
-        let content = `// 此文件由 vite-plugin-ribbon 自动生成\n// 图片目录: ${imagesAbsolutePath}\n\n`;
+        let content = `// 此文件由 vite-plugin-wps-enhance 自动生成\n// 图片目录: ${imagesAbsolutePath}\n\n`;
         if (allIds.length > 0) {
             const idsUnion = allIds.map((id) => `    | "${id}"`).join("\n");
             content += `// 所有 Ribbon 控件的 ID\ntype RibbonControlId =\n${idsUnion};\n\n`;

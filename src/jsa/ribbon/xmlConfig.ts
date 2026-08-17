@@ -7,7 +7,7 @@ import {
     separator,
     splitButton,
     tab,
-} from "#vite-plugin-ribbon";
+} from "#vite-plugin-wps-enhance";
 
 export const xmlConfig = RibbonBuilder.create({
     // onLoad: "onAddinLoad", // 实测无效果，删除

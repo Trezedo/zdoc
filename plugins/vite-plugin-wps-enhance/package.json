@@ -1,5 +1,5 @@
 {
-    "name": "vite-plugin-ribbon",
+    "name": "vite-plugin-wps-enhance",
     "version": "1.0.0",
     "type": "module",
     "main": "./src/index.ts",
