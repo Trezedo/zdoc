@@ -1,5 +1,3 @@
-import type { TypographyConfig } from "@/jsa/types";
-
 import {
     convertIndentToSpace,
     convertSpaceToIndent,
@@ -14,6 +12,17 @@ import { viewMailSourceInfo } from "@/jsa/commands/mergeMail";
 import { toggleTaskPane } from "@/jsa/ribbon/taskPane";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { STORAGE_KEYS } from "@/jsa/utils/storage";
+import {
+    setFontAsciiToEast,
+    setFontFS,
+    setFontFZ,
+    setFontHei,
+    setFontKai,
+    setFontRoman,
+    setFontSize16,
+    setFontSize22,
+    setLineExactly,
+} from "@/jsa/utils/styles";
 import { useGovDocConfig } from "@/stores/govDocConfig";
 
 interface RibbonAction {
@@ -23,44 +32,6 @@ interface RibbonAction {
 function getTypoConfig() {
     const config = useGovDocConfig();
     return config.typography.value;
-}
-
-function makeFarEastStyle(fontGetter: (config: TypographyConfig) => string, size?: number) {
-    return () => {
-        const config = getTypoConfig();
-        const font = Application.Selection.Font;
-
-        // 获取原始的中、西文字体名称，判断是否为“使用中文字体”
-        const originalEast = font.NameFarEast;
-        const originalAscii = font.NameAscii;
-        const wasUnified = originalEast === originalAscii;
-
-        const asciiFontName = config.main.en || "Times New Roman";
-        withUndoRecord("", () => {
-            const newFont = fontGetter(config);
-
-            // 显式设置 font.Name 会覆盖 font.NameAscii，同时避免出现中文标点符号显示为半角
-            font.Name = newFont;
-            font.NameFarEast = newFont;
-            if (wasUnified) {
-                // 原本文档未区分中西文，则整体统一为新字体
-                font.NameAscii = newFont;
-            } else {
-                // 原本有区分，则设为用户配置的西文字体
-                font.NameAscii = asciiFontName;
-            }
-            // 6. 若有字号参数则设置
-            if (size !== undefined) font.Size = size;
-        });
-    };
-}
-
-function makeAsciiStyle(fontGetter: (config: TypographyConfig) => string) {
-    return () => {
-        const config = getTypoConfig();
-        const font = Application.Selection.Font;
-        font.NameAscii = fontGetter(config);
-    };
 }
 
 const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
@@ -94,31 +65,15 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnHeaderFooter: () => toggleTaskPane(STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID),
 
     // 快捷样式
-    btnFontSize2: () => {
-        Application.Selection.Font.Size = 22;
-    },
-    btnFontSize3: () => {
-        Application.Selection.Font.Size = 16;
-    },
-    btnFontFZ: makeFarEastStyle((c) => c.title.zh),
-    btnFontHei: makeFarEastStyle((c) => c.h1.font || "黑体"),
-    btnFontKai: makeFarEastStyle((c) => c.h2.font || "楷体_GB2312"),
-    btnFontFS: makeFarEastStyle((c) => c.main.zh || "仿宋_GB2312"),
-    btnFontRoman: makeAsciiStyle((c) => c.main.en || "Times New Roman"),
-    btnFontAsciiToEast: () => {},
-    btnLineExactly: () => {
-        const config = getTypoConfig();
-        const pf = Application.Selection.ParagraphFormat;
-        withUndoRecord("", () => {
-            pf.LineSpacingRule = wdLineSpaceExactly;
-            pf.LineSpacing = config.main.spacing || 28.95;
-            // 以下为针对未使用“公文正文”样式段落的补充设置
-            pf.KeepWithNext = msoFalse;
-            pf.KeepTogether = msoFalse;
-            pf.SpaceBefore = 0;
-            pf.SpaceAfter = 0;
-        });
-    },
+    btnFontSize2: setFontSize22,
+    btnFontSize3: setFontSize16,
+    btnFontFZ: setFontFZ,
+    btnFontHei: setFontHei,
+    btnFontKai: setFontKai,
+    btnFontFS: setFontFS,
+    btnFontRoman: setFontRoman,
+    btnFontAsciiToEast: setFontAsciiToEast,
+    btnLineExactly: setLineExactly,
 
     // 辅助
     btnClearIndent: () => {
