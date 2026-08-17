@@ -1,3 +1,5 @@
+import { createApp } from "vue";
+
 import "@/styles/main.css";
 
 // 类型声明：让 TS 知道 import.meta.glob 的返回类型
@@ -33,8 +35,8 @@ const dialogType = urlParams.get("dialog");
             }
 
             try {
-                // 同时加载 Vue 核心和弹窗组件
-                const [{ createApp }, module] = await Promise.all([import("vue"), loader()]);
+                // 加载弹窗组件
+                const [module] = await Promise.all([loader()]);
                 const app = createApp(module.default);
                 app.mount("#app");
             } catch (err) {
@@ -44,7 +46,6 @@ const dialogType = urlParams.get("dialog");
             // ========== 主应用模式 ==========
             try {
                 const [
-                    { createApp },
                     { createPinia },
                     { default: App },
                     { registerDirectives },
@@ -54,7 +55,6 @@ const dialogType = urlParams.get("dialog");
                     { useGovDocConfigStore },
                     { setupGlobalErrorHandler },
                 ] = await Promise.all([
-                    import("vue"),
                     import("pinia"),
                     import("@/App.vue"),
                     import("@/directives"),
