@@ -1,7 +1,7 @@
 import type { PageLayoutConfig } from "@/jsa/types";
 
 import { DEFAULT_PAGE_LAYOUT_CONFIG } from "@/config/defaults";
-import { handleAttachments } from "@/utils";
+import { handleAttachments } from "@/utils/typo";
 
 import { attachmentListRegex, attachmentListWildcards } from "./govDoc";
 

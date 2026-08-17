@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 
-import { handleAttachments } from "@/utils";
+import { handleAttachments } from "@/utils/typo";
 
 test("测试附件对齐", () => {
     let str = String.raw`　　附件：1. ××××××

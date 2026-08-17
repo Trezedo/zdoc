@@ -1,7 +1,7 @@
 import type { RouteNamedMap } from "vue-router/auto-routes";
 
 import { getItem, removeItem, setItem, STORAGE_KEYS } from "@/jsa/utils/storage";
-import { getRouterUrl } from "@/utils";
+import { getRouterUrl } from "@/utils/router";
 
 const ROUTE_MAP: Record<string, keyof RouteNamedMap> = {
     [STORAGE_KEYS.DOC_SETTINGS_ID]: "/settings",
