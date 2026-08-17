@@ -64,3 +64,16 @@ export function getMailMergeSourcePath(doc: Wps.Document = ActiveDocument): Mail
         sourceType: sourceType,
     };
 }
+
+/**
+ * 查看数据源信息
+ */
+export function viewMailSourceInfo() {
+    const res = getMailMergeSourcePath();
+    const msg = res.success
+        ? `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${
+              res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""
+          }`
+        : res.error;
+    Application.confirm(msg);
+}

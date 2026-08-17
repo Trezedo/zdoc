@@ -10,7 +10,7 @@ import {
 import { convertNumberingToStatic } from "@/jsa/commands/field";
 import { quickFormat } from "@/jsa/commands/govDoc";
 import { exportAllImages, formatInlineImages } from "@/jsa/commands/image";
-import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
+import { viewMailSourceInfo } from "@/jsa/commands/mergeMail";
 import { toggleTaskPane } from "@/jsa/ribbon/taskPane";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { STORAGE_KEYS } from "@/jsa/utils/storage";
@@ -145,15 +145,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnTextViewCompare: () => toggleTaskPane(STORAGE_KEYS.TEXT_COMPARE_TASKPANE_ID),
 
     btnNumberToStatic: convertNumberingToStatic,
-    btnViewMailSource: () => {
-        const res = getMailMergeSourcePath();
-        const msg = res.success
-            ? `已复制路径！\n\n该文档引用 ${res.sourceType} 数据源：\n\n${res.filePath}\n\n${
-                  res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""
-              }`
-            : res.error;
-        Application.confirm(msg);
-    },
+    btnViewMailSource: viewMailSourceInfo,
     btnUpdateFiled: () => {
         const doc = ActiveDocument;
         const fld = doc.Fields;
