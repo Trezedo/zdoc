@@ -13,5 +13,8 @@ components.d.ts
 typed-router.d.ts
 ribbon-images.d.ts
 
+# 自定义 ribbon 插件生成的 xml
+public/ribbon.xml
+
 # debug logs
 debug.log
