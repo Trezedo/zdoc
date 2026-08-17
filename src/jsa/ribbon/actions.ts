@@ -65,6 +65,10 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnHeaderFooter: () => toggleTaskPane(STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID),
 
     // 快捷样式
+    btnQuickStyle: () => {
+        const url = window.location.origin + window.location.pathname + "?dialog=quick-style";
+        Application.ShowDialog(url, "快捷样式", 360, 240, false);
+    },
     btnFontSize2: setFontSize22,
     btnFontSize3: setFontSize16,
     btnFontFZ: setFontFZ,

@@ -53,36 +53,39 @@ export const xmlConfig = RibbonBuilder.create({
                 }),
             ]),
             group("快捷样式", "grpStyle", [
-                separator(),
-                button("二号", "btnFontSize2", { imageMso: "FontSize" }),
-                button("三号", "btnFontSize3", { imageMso: "FontSize" }),
-                separator(),
-                button("小标宋", "btnFontFZ", {
-                    imageMso: "ReplaceFont",
-                    supertip: "对应排版设置中\n“标题”的中文字体",
-                }),
-                button("黑体", "btnFontHei", {
-                    imageMso: "ReplaceFont",
-                    supertip: "对应排版设置中\n“一级标题”的字体",
-                }),
-                button("楷体", "btnFontKai", {
-                    imageMso: "ReplaceFont",
-                    supertip: "对应排版设置中\n“二级标题”的字体",
-                }),
-                button("仿宋", "btnFontFS", {
-                    imageMso: "ReplaceFont",
-                    supertip: "对应排版设置中\n“正文”的中文字体",
-                }),
-                button("西文罗马体", "btnFontRoman", {
-                    imageMso: "ReplaceFont",
-                    supertip: "西文设为“Times New Roman”\n或“Nimbus Roman”字体",
-                }),
-                button("西文同中文", "btnFontAsciiToEast", {
-                    imageMso: "ReplaceFont",
-                    supertip: "西文使用中文字体",
-                }),
-                button("固定行距", "btnLineExactly", { imageMso: "LineSpacing" }),
-                separator(),
+                splitButton("sbQuickStyle", { size: "large" }, [
+                    button("快捷样式", "btnQuickStyle", { imageMso: "StyleFormat" }),
+                    menu("", "mnuStyleList", [
+                        button("二号", "btnFontSize2", { imageMso: "FontSize" }),
+                        button("三号", "btnFontSize3", { imageMso: "FontSize" }),
+                        menuSeparator("sep1"),
+                        button("小标宋", "btnFontFZ", {
+                            imageMso: "ReplaceFont",
+                            supertip: "对应排版设置中\n“标题”的中文字体",
+                        }),
+                        button("黑体", "btnFontHei", {
+                            imageMso: "ReplaceFont",
+                            supertip: "对应排版设置中\n“一级标题”的字体",
+                        }),
+                        button("楷体", "btnFontKai", {
+                            imageMso: "ReplaceFont",
+                            supertip: "对应排版设置中\n“二级标题”的字体",
+                        }),
+                        button("仿宋", "btnFontFS", {
+                            imageMso: "ReplaceFont",
+                            supertip: "对应排版设置中\n“正文”的中文字体",
+                        }),
+                        button("西文罗马体", "btnFontRoman", {
+                            imageMso: "ReplaceFont",
+                            supertip: "西文设为“Times New Roman”\n或“Nimbus Roman”字体",
+                        }),
+                        button("西文同中文", "btnFontAsciiToEast", {
+                            imageMso: "ReplaceFont",
+                            supertip: "西文使用中文字体",
+                        }),
+                        button("固定行距", "btnLineExactly", { imageMso: "LineSpacing" }),
+                    ]),
+                ]),
             ]),
             group("辅助", "grpHelper", [
                 menu("段落缩进", "mnuIndent", { imageMso: "IncreaseIndent", size: "large" }, [
