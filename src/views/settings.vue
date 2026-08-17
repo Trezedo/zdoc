@@ -36,7 +36,7 @@
 import PageSettings from "@/components/PageSettings.vue";
 import TypographySettings from "@/components/TypographySettings.vue";
 import { getDefaultConfigFull } from "@/config/defaults";
-import { useGovDocConfigStore } from "@/stores/govDocConfig";
+import { useGovDocConfig } from "@/stores/govDocConfig";
 
 const typographyRef = ref<InstanceType<typeof TypographySettings> | null>(null);
 const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
@@ -44,12 +44,11 @@ const pageRef = ref<InstanceType<typeof PageSettings> | null>(null);
 const message = useMessage();
 const notification = useNotification();
 
-const store = useGovDocConfigStore();
-// 使用 storeToRefs 解构，保持响应式
-const { pageLayout, typography } = storeToRefs(store);
+const config = useGovDocConfig();
+const { pageLayout, typography, header, footer } = config;
 
 function saveConfig() {
-    const result = store.saveToFile();
+    const result = config.saveToFile();
     if (result.success) {
         notification.success({
             title: "保存成功",
@@ -63,7 +62,7 @@ function saveConfig() {
 }
 
 function importConfig() {
-    store.reloadFromFile();
+    config.loadFromFile();
     message.success("已从配置文件重新载入");
 }
 
@@ -75,10 +74,10 @@ async function applyAll() {
 
 function resetAll() {
     const def = getDefaultConfigFull();
-    store.pageLayout = def.pageLayout;
-    store.typography = def.typography;
-    store.header = def.header!;
-    store.footer = def.footer!;
+    pageLayout.value = def.pageLayout;
+    typography.value = def.typography;
+    header.value = def.header;
+    footer.value = def.footer;
     message.info("已恢复默认设置");
 }
 </script>

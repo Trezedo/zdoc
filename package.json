@@ -23,7 +23,6 @@
         "axios": "^1.18.1",
         "core-js": "^3.49.0",
         "naive-ui": "^2.44.1",
-        "pinia": "^4.0.2",
         "radash": "^12.1.1",
         "vue": "^3.5.40",
         "vue-router": "catalog:",

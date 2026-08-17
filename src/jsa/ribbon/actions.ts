@@ -14,24 +14,20 @@ import { getMailMergeSourcePath } from "@/jsa/commands/mergeMail";
 import { toggleTaskPane } from "@/jsa/ribbon/taskPane";
 import { withUndoRecord } from "@/jsa/utils/document";
 import { STORAGE_KEYS } from "@/jsa/utils/storage";
-import { useGovDocConfigStore } from "@/stores/govDocConfig";
+import { useGovDocConfig } from "@/stores/govDocConfig";
 
 interface RibbonAction {
     (): void;
 }
 
-function getTypoConfigFromStore(): TypographyConfig {
-    const store = useGovDocConfigStore();
-    // 如果还未加载，同步加载一次（但通常在 App.vue 中已加载）
-    if (!store.loaded) {
-        store.loadFromFile();
-    }
-    return store.typography;
+function getTypoConfig() {
+    const config = useGovDocConfig();
+    return config.typography.value;
 }
 
 function makeFarEastStyle(fontGetter: (config: TypographyConfig) => string, size?: number) {
     return () => {
-        const config = getTypoConfigFromStore();
+        const config = getTypoConfig();
         const font = Application.Selection.Font;
 
         // 获取原始的中、西文字体名称，判断是否为“使用中文字体”
@@ -61,7 +57,7 @@ function makeFarEastStyle(fontGetter: (config: TypographyConfig) => string, size
 
 function makeAsciiStyle(fontGetter: (config: TypographyConfig) => string) {
     return () => {
-        const config = getTypoConfigFromStore();
+        const config = getTypoConfig();
         const font = Application.Selection.Font;
         font.NameAscii = fontGetter(config);
     };
@@ -70,7 +66,7 @@ function makeAsciiStyle(fontGetter: (config: TypographyConfig) => string) {
 const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     // 文档处理
     btnGovDocTypo: () => {
-        const config = getTypoConfigFromStore();
+        const config = getTypoConfig();
         quickFormat(config);
     },
     btnTypoConfig: () => toggleTaskPane(STORAGE_KEYS.DOC_SETTINGS_ID),
@@ -111,7 +107,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     btnFontRoman: makeAsciiStyle((c) => c.main.en || "Times New Roman"),
     btnFontAsciiToEast: () => {},
     btnLineExactly: () => {
-        const config = getTypoConfigFromStore();
+        const config = getTypoConfig();
         const pf = Application.Selection.ParagraphFormat;
         withUndoRecord("", () => {
             pf.LineSpacingRule = wdLineSpaceExactly;

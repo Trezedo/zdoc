@@ -46,22 +46,18 @@ const dialogType = urlParams.get("dialog");
             // ========== 主应用模式 ==========
             try {
                 const [
-                    { createPinia },
                     { default: App },
                     { registerDirectives },
                     { setupRibbonBindings },
                     { setupGlobalEnum },
                     { router },
-                    { useGovDocConfigStore },
                     { setupGlobalErrorHandler },
                 ] = await Promise.all([
-                    import("pinia"),
                     import("@/App.vue"),
                     import("@/directives"),
                     import("@/jsa/ribbon/actions"),
                     import("@/jsa/global"),
                     import("@/router/"),
-                    import("@/stores/govDocConfig"),
                     import("@/utils/globalErrorHandler"),
                 ]);
 
@@ -69,19 +65,13 @@ const dialogType = urlParams.get("dialog");
                 setupRibbonBindings();
 
                 const app = createApp(App);
-                const pinia = createPinia();
                 app.use(router);
-                app.use(pinia);
                 registerDirectives(app);
                 setupGlobalErrorHandler(app);
 
                 app.mount("#app");
 
                 setupGlobalEnum();
-
-                // 加载配置
-                const store = useGovDocConfigStore();
-                store.loadFromFile();
 
                 // 空闲时预加载所有弹窗组件（让浏览器缓存）
                 const preloadAllDialogs = () => {

@@ -1,10 +1,4 @@
-import type {
-    FooterConfig,
-    GovDocConfig,
-    HeaderConfig,
-    PageLayoutConfig,
-    TypographyConfig,
-} from "@/jsa/types";
+import { useLocalStorage } from "@vueuse/core";
 
 import {
     DEFAULT_FOOTER_CONFIG,
@@ -15,71 +9,67 @@ import {
 } from "@/config/defaults";
 import { validateGovDocConfig } from "@/config/validator";
 import { loadGovDocConfigFromFile, saveGovDocConfigToFile } from "@/jsa/utils/filesSystem";
+import { STORAGE_KEYS } from "@/jsa/utils/storage";
 
-type GovDocConfigState = GovDocConfig & { loaded: boolean };
+export function useGovDocConfig() {
+    const typography = useLocalStorage(STORAGE_KEYS.TYPO, DEFAULT_TYPO_CONFIG);
+    const pageLayout = useLocalStorage(STORAGE_KEYS.PAGE, DEFAULT_PAGE_LAYOUT_CONFIG);
+    const header = useLocalStorage(STORAGE_KEYS.HEADER, DEFAULT_HEADER_CONFIG);
+    const footer = useLocalStorage(STORAGE_KEYS.FOOTER, DEFAULT_FOOTER_CONFIG);
 
-export const useGovDocConfigStore = defineStore("govDocConfig", {
-    state: (): GovDocConfigState => ({
-        typography: { ...DEFAULT_TYPO_CONFIG } as TypographyConfig,
-        pageLayout: { ...DEFAULT_PAGE_LAYOUT_CONFIG } as PageLayoutConfig,
-        header: { ...DEFAULT_HEADER_CONFIG } as HeaderConfig,
-        footer: { ...DEFAULT_FOOTER_CONFIG } as FooterConfig,
-        loaded: false,
-    }),
+    /**
+     * 重置为默认值
+     */
+    const resetToDefault = () => {
+        const def = getDefaultConfigFull();
+        typography.value = def.typography;
+        pageLayout.value = def.pageLayout;
+        header.value = def.header!;
+        footer.value = def.footer!;
+    };
 
-    actions: {
-        /**
-         * 从文件加载配置
-         */
-        loadFromFile() {
-            const saved = loadGovDocConfigFromFile();
-            if (saved) {
-                try {
-                    const validated = validateGovDocConfig(saved);
-                    // 直接赋值给各个 state 属性
-                    this.typography = validated.typography || { ...DEFAULT_TYPO_CONFIG };
-                    this.pageLayout = validated.pageLayout || { ...DEFAULT_PAGE_LAYOUT_CONFIG };
-                    this.header = validated.header || { ...DEFAULT_HEADER_CONFIG };
-                    this.footer = validated.footer || { ...DEFAULT_FOOTER_CONFIG };
-                } catch (error) {
-                    console.warn("配置校验失败，使用默认配置", error);
-                    this.resetToDefault();
-                }
-            } else {
-                this.resetToDefault();
+    /**
+     * 从文件加载配置
+     */
+    const loadFromFile = () => {
+        const saved = loadGovDocConfigFromFile();
+        if (saved) {
+            try {
+                const validated = validateGovDocConfig(saved);
+                typography.value = validated.typography || { ...DEFAULT_TYPO_CONFIG };
+                pageLayout.value = validated.pageLayout || { ...DEFAULT_PAGE_LAYOUT_CONFIG };
+                header.value = validated.header || { ...DEFAULT_HEADER_CONFIG };
+                footer.value = validated.footer || { ...DEFAULT_FOOTER_CONFIG };
+            } catch (error) {
+                console.warn("配置校验失败，使用默认配置", error);
+                resetToDefault();
             }
-            this.loaded = true;
-        },
+        } else {
+            resetToDefault();
+        }
+    };
 
-        /**
-         * 保存到文件
-         */
-        saveToFile() {
-            const config = {
-                pageLayout: this.pageLayout,
-                typography: this.typography,
-                header: this.header,
-                footer: this.footer,
-            };
-            return saveGovDocConfigToFile(config);
-        },
+    /**
+     * 保存到文件
+     */
+    const saveToFile = () => {
+        const config = {
+            pageLayout: pageLayout.value,
+            typography: typography.value,
+            header: header.value,
+            footer: footer.value,
+        };
+        return saveGovDocConfigToFile(config);
+    };
 
-        /**
-         * 重置为默认值
-         */
-        resetToDefault() {
-            const def = getDefaultConfigFull();
-            this.typography = def.typography;
-            this.pageLayout = def.pageLayout;
-            this.header = def.header!;
-            this.footer = def.footer!;
-        },
-
-        /**
-         * 重新从文件载入（用户点击"载入配置"时调用）
-         */
-        reloadFromFile() {
-            this.loadFromFile();
-        },
-    },
-});
+    return {
+        typography,
+        pageLayout,
+        header,
+        footer,
+        // 方法
+        loadFromFile,
+        saveToFile,
+        resetToDefault,
+    };
+}

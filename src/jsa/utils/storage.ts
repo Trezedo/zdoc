@@ -5,6 +5,10 @@ export const STORAGE_KEYS = {
     TEXT_COMPARE_TASKPANE_ID: "text_compare_taskpane_id",
     HEADER_FOOTER_TASKPANE_ID: "header_footer_taskpane_id",
     LAST_SELECTED_FOLDER: "LastSelectedFolder",
+    TYPO: "typo",
+    PAGE: "page",
+    HEADER: "header",
+    FOOTER: "footer",
 };
 
 export function getItem(key: string): string | null {

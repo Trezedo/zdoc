@@ -128,14 +128,13 @@ import { DEFAULT_FOOTER_CONFIG, DEFAULT_HEADER_CONFIG } from "@/config/defaults"
 import { removeAllHeaders, setHeader } from "@/jsa/commands/header";
 import { addFooterPagenum, hasPagenum, removePagenum } from "@/jsa/commands/pagenum";
 import { refreshDocumentView } from "@/jsa/utils/document";
-import { useGovDocConfigStore } from "@/stores/govDocConfig";
+import { useGovDocConfig } from "@/stores/govDocConfig";
 
 const message = useMessage();
 const notification = useNotification();
 
-const store = useGovDocConfigStore();
-// 使用 storeToRefs 解构，保持响应式
-const { header, footer } = storeToRefs(store);
+const config = useGovDocConfig();
+const { header, footer } = config;
 
 const hasPageNum = ref(false);
 
@@ -162,7 +161,7 @@ function removeHeader() {
 }
 
 function resetDefaultHeader() {
-    store.header = { ...DEFAULT_HEADER_CONFIG };
+    header.value = { ...DEFAULT_HEADER_CONFIG };
     message.info("页眉配置已恢复默认");
 }
 
@@ -191,12 +190,12 @@ function removeFooter() {
 }
 
 function resetDefaultFooter() {
-    store.footer = { ...DEFAULT_FOOTER_CONFIG };
+    footer.value = { ...DEFAULT_FOOTER_CONFIG };
     message.info("页脚配置已恢复默认");
 }
 
 function saveConfig() {
-    const result = store.saveToFile();
+    const result = config.saveToFile();
     if (result.success) {
         notification.success({
             title: "保存成功",
@@ -210,7 +209,7 @@ function saveConfig() {
 }
 
 function importConfig() {
-    store.reloadFromFile();
+    config.loadFromFile();
     message.success("已从配置文件重新载入");
 }
 
