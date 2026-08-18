@@ -49,14 +49,12 @@ const dialogType = urlParams.get("dialog");
                     { default: App },
                     { registerDirectives },
                     { setupRibbonBindings },
-                    { setupGlobalEnum },
                     { router },
                     { setupGlobalErrorHandler },
                 ] = await Promise.all([
                     import("@/App.vue"),
                     import("@/directives"),
                     import("@/jsa/ribbon/actions"),
-                    import("@/jsa/global"),
                     import("@/router/"),
                     import("@/utils/globalErrorHandler"),
                 ]);
@@ -70,8 +68,6 @@ const dialogType = urlParams.get("dialog");
                 setupGlobalErrorHandler(app);
 
                 app.mount("#app");
-
-                setupGlobalEnum();
 
                 // 空闲时预加载所有弹窗组件（让浏览器缓存）
                 const preloadAllDialogs = () => {

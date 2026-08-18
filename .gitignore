@@ -11,10 +11,13 @@ components.d.ts
 
 # vue router 自动生成的类型声明文件
 typed-router.d.ts
-ribbon-images.d.ts
 
-# 自定义 ribbon 插件生成的 xml
+# vite-plugin-wps-enhance 生成的文件
+
 public/ribbon.xml
+ribbon-images.d.ts
+wps-enums.generated.ts
+wps-env.d.ts
 
 # debug logs
 debug.log

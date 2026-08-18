@@ -1,8 +1,7 @@
-import fs from "fs/promises";
 import path from "path";
 import type { RibbonConfig } from "../common/typings.js";
 
-import { logger } from "../common/index.js";
+import { logger, writeIfChanged } from "../common/index.js";
 import { RibbonBuilder } from "./factory.js";
 
 export async function writeRibbonXml(config: RibbonConfig, fileName: string): Promise<void> {
@@ -10,8 +9,10 @@ export async function writeRibbonXml(config: RibbonConfig, fileName: string): Pr
     const absolutePath = path.isAbsolute(fileName)
         ? fileName
         : path.resolve(process.cwd(), fileName);
-    const dir = path.dirname(absolutePath);
-    await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(absolutePath, xmlContent, "utf-8");
-    logger.info(`Generated ${absolutePath}`);
+    const changed = await writeIfChanged(absolutePath, xmlContent);
+    if (changed) {
+        logger.info(`Generated ${absolutePath}`);
+    } else {
+        logger.info(`Skipped ribbon.xml (unchanged): ${absolutePath}`);
+    }
 }

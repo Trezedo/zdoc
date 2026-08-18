@@ -2,7 +2,7 @@ import { fileURLToPath, URL } from "node:url";
 
 import legacy from "@vitejs/plugin-legacy";
 import vue from "@vitejs/plugin-vue";
-import { wpsEnhancePlugin } from "#vite-plugin-wps-enhance";
+import { scanUsedEnums, wpsEnhancePlugin } from "#vite-plugin-wps-enhance";
 import AutoImport from "unplugin-auto-import/vite";
 import { NaiveUiResolver } from "unplugin-vue-components/resolvers";
 import Components from "unplugin-vue-components/vite";
@@ -11,6 +11,11 @@ import bundleObfuscator from "vite-plugin-bundle-obfuscator";
 import VueRouter from "vue-router/vite";
 
 import { xmlConfig } from "./src/jsa/ribbon/xmlConfig.ts";
+
+// 扫描源码中实际使用的 `mso*` / `wd*` 标识符：
+// - usedKeys：喂给 AutoImport（只注入实际使用的 ~30 个，而非全量 600+）
+// - usedGroups：插件内部会自动扫描，无需手动维护枚举组列表
+const used = scanUsedEnums();
 
 export default defineConfig({
     base: "./",
@@ -46,6 +51,12 @@ export default defineConfig({
             dts: "./src/typed-router.d.ts",
         }),
         vue(),
+        // wpsEnhancePlugin 需在 AutoImport 之前，确保 enums.generated.ts 已生成
+        // enum: {} 表示自动扫描源码中实际使用的枚举（零配置模式）
+        wpsEnhancePlugin({
+            ribbon: { config: xmlConfig, fileName: "./public/ribbon.xml" },
+            enum: {},
+        }),
         AutoImport({
             resolvers: [NaiveUiResolver()],
             imports: [
@@ -65,10 +76,6 @@ export default defineConfig({
             // 限制文件扩展名，只处理 .vue
             extensions: ["vue"],
             exclude: [/node_modules/, /\.test\.vue$/],
-        }),
-        // 加载项 UI 配置
-        wpsEnhancePlugin({
-            ribbon: { config: xmlConfig, fileName: "./public/ribbon.xml" },
         }),
 
         bundleObfuscator({

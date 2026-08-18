@@ -19,6 +19,10 @@
                 "types": "./src/ribbon/factory.ts",
                 "default": "./src/ribbon/factory.ts"
             }
+        },
+        "./global-types": {
+            "types": "./src/global-types.d.ts",
+            "default": "./src/global-types.d.ts"
         }
     },
     "devDependencies": {

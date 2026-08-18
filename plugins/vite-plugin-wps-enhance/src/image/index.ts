@@ -4,7 +4,7 @@ import type { ImageTypeOptions, RibbonConfig } from "../common/typings.js";
 
 import { watch } from "chokidar";
 
-import { logger } from "../common/index.js";
+import { logger, writeIfChanged } from "../common/index.js";
 import { collectAllIds } from "../ribbon/collect-ids.js";
 
 export async function generateImageTypes(
@@ -36,9 +36,16 @@ export async function generateImageTypes(
         const typeUnion = imageFiles.map((f) => `    | "${f}"`).join("\n");
         content += `type ImageFileName =\n${imageFiles.length ? typeUnion : `""`};\n`;
 
-        await fs.mkdir(path.dirname(outputAbsolutePath), { recursive: true });
-        await fs.writeFile(outputAbsolutePath, content, "utf-8");
-        logger.info(`Generated image types: ${outputAbsolutePath} (${imageFiles.length} images)`);
+        const changed = await writeIfChanged(outputAbsolutePath, content);
+        if (changed) {
+            logger.info(
+                `Generated image types: ${outputAbsolutePath} (${imageFiles.length} images)`,
+            );
+        } else {
+            logger.info(
+                `Skipped image types (unchanged): ${outputAbsolutePath} (${imageFiles.length} images)`,
+            );
+        }
     } catch (err) {
         logger.error(`Failed to generate image types:`, err);
     }

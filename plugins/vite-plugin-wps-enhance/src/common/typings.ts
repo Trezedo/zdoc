@@ -201,8 +201,57 @@ export interface RibbonOptions {
  * `vite-plugin-wps-enhance` 插件配置。
  *
  * - `ribbon`: Ribbon XML 与图片类型声明生成；不传则跳过。
- * - `enum`: 枚举导出文件生成；不传则跳过。
+ * - `enum`: 枚举导出文件 + 全局类型声明生成；不传则跳过。
  */
 export interface WpsEnhanceOptions {
     ribbon?: RibbonOptions;
+    enum?: EnumEnhanceOptions;
+}
+
+/**
+ * 枚举增强配置。
+ */
+export interface EnumEnhanceOptions {
+    /**
+     * `wps-enums.generated.ts` 输出路径（相对项目根目录或绝对路径）。
+     * @default `src/wps-enums.generated.ts`。
+     */
+    outputFile?: string;
+    /**
+     * `wps-env.d.ts` 输出路径（相对项目根目录或绝对路径）。
+     * @default `src/wps-env.d.ts`。
+     */
+    envFile?: string;
+    /**
+     * 源码扫描的根目录（相对项目根目录或绝对路径）。
+     * @description 插件会自动扫描源码中使用的 `mso*` / `wd*` 标识符，从 `wps-jsapi-declare` 中匹配出真实的枚举定义，
+     * @default `["src"]`。
+     */
+    sourceDirs?: string[];
+    /**
+     * 源码扫描的文件扩展名。
+     * @default `[".ts", ".tsx", ".vue", ".js", ".jsx"]`
+     */
+    extensions?: string[];
+    /**
+     * 是否只保留源码中实际引用到的枚举成员（组内成员级过滤）。
+     *
+     * 模式默认值：
+     * - **dev**：`false`——生成全量枚举（所有组、所有成员），
+     *   任何 `wdXXX`/`msoXXX` 都有类型提示与运行时值。
+     * - **build**：`true`——只保留源码中实际引用的成员，bundle 最小。
+     * @default dev=false / build=true
+     */
+    onlyUsedMembers?: boolean;
+    /**
+     * 应用入口文件路径（相对项目根目录或绝对路径）。
+     *
+     * 插件会把虚拟模块自动注入到该文件顶部，把 WPS 枚举注册到 `window`，
+     * 从而无需在业务代码里手动注册——启用插件即可直接使用 `wdXXX`/`msoXXX`。
+     *
+     * 仅在 `enum` 启用时生效。传空字符串 `""` 可关闭自动注入。
+     *
+     * @default "src/main.ts"
+     */
+    entry?: string;
 }
