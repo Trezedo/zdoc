@@ -14,7 +14,7 @@ export function setHeader(
     doc: Wps.Document = ActiveDocument,
 ) {
     if (!doc) {
-        alert("未打开任何文档");
+        wpsAlert("未打开任何文档");
         return;
     }
 
@@ -48,7 +48,7 @@ export function setHeader(
  */
 export function removeAllHeaders(doc: Wps.Document = ActiveDocument): void {
     if (!doc) {
-        alert("没有打开的文档");
+        wpsAlert("没有打开的文档");
         return;
     }
 

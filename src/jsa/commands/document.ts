@@ -78,7 +78,7 @@ export function removeShadingBackground() {
 export function convertSpaceToIndent() {
     const paras = Application.Selection.Paragraphs;
     if (paras.Count === 0) {
-        alert("请先选择需要处理的文本区域！");
+        wpsAlert("请先选择需要处理的文本区域！");
         return;
     }
 
@@ -120,7 +120,7 @@ export function convertIndentToSpace() {
     const paras = Application.Selection.Paragraphs;
     const count = paras.Count;
     if (count === 0) {
-        alert("请先选择需要处理的文本区域！");
+        wpsAlert("请先选择需要处理的文本区域！");
         return;
     }
     for (let i = 1; i <= count; i++) {

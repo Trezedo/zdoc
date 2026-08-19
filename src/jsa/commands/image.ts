@@ -64,7 +64,7 @@ export function batchResizeImages(
 export function formatInlineImages(doc: Wps.Document = ActiveDocument) {
     let count = doc.InlineShapes.Count;
     if (count < 1) {
-        alert("该文档没有图片");
+        wpsAlert("该文档没有图片");
         return;
     }
     for (let i = 1; i <= count; i++) {
@@ -98,7 +98,7 @@ export function compressImages() {
 export function exportAllImages(doc: Wps.Document = ActiveDocument) {
     const count = doc.InlineShapes.Count;
     if (count < 1) {
-        alert("此文档不包含图片");
+        wpsAlert("此文档不包含图片");
         return;
     }
 
@@ -121,5 +121,5 @@ export function exportAllImages(doc: Wps.Document = ActiveDocument) {
         saveName = imgPath + ".png"; // 比 jpg 格式通用
         p.SaveAsPicture(savePath + saveName);
     }
-    confirm(`已保存 ${count} 张图片到文件夹：\n${savePath}\n`);
+    wpsConfirm(`已保存 ${count} 张图片到文件夹：\n${savePath}\n`);
 }

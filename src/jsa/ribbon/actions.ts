@@ -59,7 +59,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
     },
     btnClearNonBuiltinStyles: () => {
         const msg = deleteNonBuiltInStyles();
-        alert(msg);
+        wpsAlert(msg);
     },
     btnRemoveShading: () => withUndoRecord("清除底纹背景", removeShadingBackground),
     btnHeaderFooter: () => toggleTaskPane(STORAGE_KEYS.HEADER_FOOTER_TASKPANE_ID),
@@ -121,7 +121,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
 
     btnClearEmptyPara: () => {
         const sel = Application.Selection;
-        if (sel.Type == wdSelectionIP) return alert("请选择需要清除空段的范围，避免误删");
+        if (sel.Type == wdSelectionIP) return wpsAlert("请选择需要清除空段的范围，避免误删！");
         const paras = sel.Paragraphs;
         const count = paras.Count;
         for (let i = count; i >= 1; i--) {

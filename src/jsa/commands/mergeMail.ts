@@ -75,5 +75,5 @@ export function viewMailSourceInfo() {
               res.sheetName ? "Sheet: [" + res.sheetName + "]" : ""
           }`
         : res.error;
-    Application.confirm(msg);
+    wpsConfirm(msg);
 }
