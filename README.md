@@ -4,26 +4,32 @@
 
 ## ✨ 特性
 
-- 📜 **一键公文排版**：自动设置页边距、页眉页脚、文档网格，应用标准的正文、标题样式，智能识别小标题（段旨句）
+- 📜 **一键排版**：自动设置页边距、页眉页脚、文档网格，应用标准的正文、标题样式，智能识别小标题（段旨句）
 - 📄 **页面布局**：快速设置页边距（上 3.7cm / 下 3.5cm / 左 2.8cm / 右 2.6cm）、页眉页脚距离
 - 🖼️ **图片处理**：批量修改嵌入型图片尺寸、排版居中、压缩及导出
-- ⌨️ **快捷操作**：快速切换字体（二号小标宋/三号黑体/楷体/仿宋）、清除格式、删除非内置样式
-- 🔢 **编号转换**：自动编号与静态文本互转
-- 📧 **邮件合并**：获取数据源路径并复制到剪贴板
-- 🧩 **自定义 CustomUI**：通过 `src/jsa/ribbon/xmlConfig.ts` 和 `vite-plugin-ribbon` 插件生成自定义选项卡
-- 🎨 **现代化 UI**：Tailwind CSS + 组件化视图，支持任务窗格交互
+- ⌨️ **快捷样式**：快速切换字体（二号小标宋/三号黑体/楷体/仿宋/西文罗马体）、固定行距、清除格式、删除非内置样式、清除底纹背景
+- 🔢 **编号转换**：动态自动编号与静态文本互转（含一/二级标题序号转动态编号）
+- 🧾 **页眉页脚**：可视化配置页眉内容/字体/位置，页脚支持页码（外侧/居中/内侧）、奇偶页设置
+- 🔍 **文本对比**：基于 `diff-match-patch-es`，支持效率/字符两种对比模式及差异精度调节
+- 📧 **邮件合并**：查看数据源信息并复制路径，一键更新所有域
+- 🧹 **辅助清理**：清除空段落、空格与缩进互转、正则替换、标点全半角转换
+- 🧩 **自定义 CustomUI**：通过 `src/jsa/ribbon/xmlConfig.ts` 与 `vite-plugin-wps-enhance` 插件生成 Ribbon 选项卡
+- 🎨 **现代化 UI**：Tailwind CSS 3 + Naive UI 组件化视图，任务窗格交互
+- ⚡ **条件引导启动**：弹窗与主应用按需加载，二次打开秒开（详见 [wiki](./wiki.md)）
 
 ## 🛠️ 技术栈
 
 - **前端框架**：Vue 3 (Composition API)
 - **语言**：TypeScript
-- **构建工具**：Vite
+- **构建工具**：Vite（基于 Rolldown）
 - **WPS 集成**：JS 加载项 API + 自定义 Ribbon
 - **样式**：Tailwind CSS 3
-- **UI 组件库**：Naive UI
-- **路由**：Vue Router
+- **UI 组件库**：Naive UI（按需自动导入）
+- **路由**：Vue Router（基于文件的路由，由 `unplugin-vue-router` 自动生成）
+- **状态管理**：`@vueuse/core` 的 `useLocalStorage`（无 Pinia）
 - **包管理**：pnpm (workspace)
-- **工具库**：radash、@vueuse/core、axios
+- **工具库**：radash、@vueuse/core、axios、zod（配置校验）、diff-match-patch-es（文本对比）、chinese-number-format（序号转中文）
+- **代码质量**：Prettier + lefthook Git 钩子
 - **测试**：Vitest
 
 ## 🚀 快速开始
@@ -201,43 +207,66 @@ read -p "按回车键退出..."
 
 ```text
 .
-├── public/                     # 静态资源
-│   ├── manifest.xml           # 加载项清单（必需）
-│   ├── ribbon.xml             # 功能区定义
-│   └── images/                # 图标资源
+├── public/                         # 静态资源
+│   ├── manifest.xml                # 加载项清单（必需）
+│   ├── ribbon.xml                  # 功能区定义（构建时由插件生成）
+│   └── images/                     # 图标资源
 ├── src/
-│   ├── components/            # 公共 Vue 组件
-│   ├── config/                # 配置文件（排版预设等）
-│   ├── directives/            # 自定义指令
-│   ├── jsa/                   # WPS JS API 相关
-│   │   ├── commands/          # 业务命令（与 WPS API 交互）
-│   │   │   ├── document.ts    # 页面设置、选区、样式清理等
-│   │   │   ├── field.ts       # 域操作、编号转换
-│   │   │   ├── govDoc.ts      # 公文排版核心
-│   │   │   ├── image.ts       # 图片批量处理
-│   │   │   ├── mergeMail.ts   # 邮件合并辅助
-│   │   │   └── paragraphInfo.ts # 段落信息
-│   │   ├── ribbon/            # Ribbon 配置
-│   │   │   ├── actions.ts     # 按钮回调
-│   │   │   ├── taskPane.ts    # 任务窗格管理
-│   │   │   └── xmlConfig.ts   # Ribbon XML 配置
-│   │   ├── utils/             # 文档工具函数
-│   │   │   └── document.ts    # 文档操作辅助
-│   │   └── global.ts          # 全局初始化
-│   ├── router/                # Vue Router 配置
-│   ├── styles/                # 全局样式
-│   ├── types/                 # TypeScript 类型声明
-│   ├── utils/                 # 通用工具函数（单位转换等）
-│   ├── views/                 # 任务窗格视图
-│   │   ├── index.vue          # 首页
-│   │   ├── official.vue       # 公文排版配置窗格
-│   │   ├── image-resize.vue   # 图片尺寸调整窗格
-│   │   └── page-setup.vue     # 页面布局设置窗格
-│   ├── App.vue                # 根组件
-│   ├── main.ts                # 入口文件
-│   └── shims-vue.d.ts         # Vue 类型声明
-├── plugins/                   # 自定义 Vite 插件
-│   └── vite-plugin-ribbon/    # 处理 ribbon.xml 注入
+│   ├── components/                 # 公共 Vue 组件
+│   │   ├── dialogs/                # 弹窗组件（按需加载，详见 wiki）
+│   │   ├── FooterSettings.vue      # 页脚配置组件
+│   │   ├── HeaderSettings.vue      # 页眉配置组件
+│   │   ├── PageSettings.vue        # 页面设置组件
+│   │   ├── TextDiff.vue            # 文本差异渲染组件
+│   │   └── TypographySettings.vue  # 字体/段落设置组件
+│   ├── composables/                # 组合式函数
+│   │   └── useFonts.ts             # 字体列表
+│   ├── config/                     # 配置文件（排版预设等）
+│   │   ├── defaults.ts             # 默认排版配置（国标）
+│   │   └── validator.ts            # 基于 zod 的配置校验
+│   ├── directives/                 # 自定义指令（如滚轮调整数值）
+│   ├── jsa/                        # WPS JS API 相关
+│   │   ├── commands/               # 业务命令（与 WPS API 交互）
+│   │   │   ├── document.ts         # 页面设置、样式清理、附件对齐等
+│   │   │   ├── field.ts            # 域操作、编号转换
+│   │   │   ├── govDoc.ts           # 公文排版核心（标题/正文/小标题识别）
+│   │   │   ├── image.ts            # 图片批量处理（尺寸/导出/压缩）
+│   │   │   ├── mergeMail.ts        # 邮件合并辅助
+│   │   │   ├── batchTypo.ts        # 批量排版多文档
+│   │   │   ├── header.ts           # 页眉
+│   │   │   ├── pagenum.ts          # 页脚页码
+│   │   │   └── table.ts            # 表格格式化
+│   │   ├── ribbon/                 # Ribbon 配置
+│   │   │   ├── actions.ts          # 按钮回调
+│   │   │   ├── taskPane.ts         # 任务窗格管理
+│   │   │   └── xmlConfig.ts        # Ribbon XML DSL 配置
+│   │   ├── types/                  # WPS 业务类型声明
+│   │   └── utils/                  # 文档工具函数
+│   │       ├── document.ts         # 撤销录制、文档操作辅助
+│   │       ├── filesSystem.ts      # 配置文件读写
+│   │       ├── storage.ts          # PluginStorage 封装
+│   │       └── styles.ts           # 字体/字号批量设置
+│   ├── router/                     # Vue Router 配置（合并自动路由）
+│   ├── stores/                     # 状态管理（基于 useLocalStorage）
+│   │   └── govDocConfig.ts         # 公文配置
+│   ├── styles/                     # 全局样式
+│   ├── utils/                      # 通用工具函数
+│   │   ├── fonts.ts                # 字体常量
+│   │   ├── router.ts               # 路由 URL 辅助
+│   │   ├── typo.ts                 # 排版工具
+│   │   ├── globalErrorHandler.ts   # 全局错误处理
+│   ├── views/                      # 任务窗格视图（文件路由自动生成）
+│   │   ├── index.vue               # 首页（全部页面入口）
+│   │   ├── settings.vue            # 公文设置窗格（页面 + 字体）
+│   │   ├── header-footer.vue       # 页眉页脚设置窗格
+│   │   ├── image-resize.vue        # 图片尺寸调整窗格
+│   │   ├── batch-typo.vue          # 批量排版窗格
+│   │   └── text-compare.vue        # 文本对比窗格
+│   ├── App.vue                     # 根组件（注入 Naive UI 上下文）
+│   ├── main.ts                     # 入口文件（条件引导启动，详见 wiki）
+│   └── shims-vue.d.ts              # Vue 类型声明
+├── plugins/                        # 自定义 Vite 插件
+│   └── vite-plugin-wps-enhance/    # WPS 增强：ribbon.xml 生成 + 枚举注入
 ├── package.json
 ├── vite.config.ts
 └── tailwind.config.js
@@ -249,47 +278,59 @@ read -p "按回车键退出..."
 
 ### 命令层 (`src/jsa/commands/`)
 
-| 文件               | 提供的函数                                                                                  |
-| ------------------ | ------------------------------------------------------------------------------------------- |
-| `document.ts`      | `setPageLayout`、`getCurrentRange`、`deleteNonBuiltInStyles`、`convertNumberingToStatic` 等 |
-| `image.ts`         | `batchResizeImages`、`formatInlineImages`、`compressImages`、`exportAllImages`              |
-| `mergeMail.ts`     | `getMailMergeDataSourcePath`、复制数据源路径                                                |
-| `govDoc.ts`        | 一键公文排版核心逻辑（`applyOfficialTyping`、`setDocumentGrid` 等）                         |
-| `field.ts`         | 域操作、编号转换                                                                            |
-| `paragraphInfo.ts` | 段落信息获取                                                                                |
+| 文件           | 提供的函数                                                                     |
+| -------------- | ------------------------------------------------------------------------------ |
+| `document.ts`  | `setPageLayout`、`deleteNonBuiltInStyles`、`formatAttachments` 等              |
+| `image.ts`     | `batchResizeImages`、`formatInlineImages`、`compressImages`、`exportAllImages` |
+| `mergeMail.ts` | `getMailMergeSourcePath`、`viewMailSourceInfo`、`copyText`                     |
+| `govDoc.ts`    | 公文排版核心逻辑：`quickFormat`、`setupBodyStyle`、`setupTitleStyle` 等        |
+| `field.ts`     | `convertNumberingToStatic`（动态编号转静态）                                   |
+| `batchTypo.ts` | `formatSingleDoc`、`batchFormatDocs`（批量排版多文档）                         |
+| `header.ts`    | `setHeader`、`removeAllHeaders`                                                |
+| `pagenum.ts`   | `addFooterPagenum`、`removePagenum`、`hasPagenum`                              |
+| `table.ts`     | `formatTables`                                                                 |
 
 ### 任务窗格视图 (`src/views/`)
 
-- **`official.vue`**：公文排版参数配置（字体、字号、行距、小标题加粗模式等）
+- **`index.vue`**：首页（列出全部页面入口，加载项中无实际用途，仅用于普通浏览器）
+- **`settings.vue`**：公文设置（页面布局 + 字体/段落参数，可载入/保存配置）
+- **`header-footer.vue`**：页眉页脚设置（页眉内容/字体/位置、页脚页码、奇偶页）
 - **`image-resize.vue`**：批量设置图片宽度/高度，支持锁定比例
-- **`page-setup.vue`**：页面布局设置（边距、页眉页脚）
-- **`index.vue`**：首页
+- **`batch-typo.vue`**：拖拽多文档批量排版
+- **`text-compare.vue`**：文本对比（效率/字符两种模式，可调精度）
 
-### 工具函数 (`src/utils/`)
+### 弹窗组件 (`src/components/dialogs/`)
 
-- **单位转换**：`cmToPoints`、`pointsToCm`
-- **文档范围获取**：`getActiveRange`、`isSelectionEmpty`
-- **字体操作**：批量设置中文字体、英文字体
+- **`quick-style.vue`**：快捷样式弹窗（通过 `?dialog=quick-style` 极速加载）
+
+### 工具函数 (`src/utils/` 与 `src/jsa/utils/`)
+
+- **`src/utils/`**：`fonts.ts`（字体常量）、`router.ts`（路由 URL 辅助）、`typo.ts`（排版工具）、`globalErrorHandler.ts`（全局错误处理）
+- **`src/jsa/utils/`**：`document.ts`（`withUndoRecord` 撤销录制）、`filesSystem.ts`（配置读写）、`storage.ts`（`PluginStorage` 封装）、`styles.ts`（字体/字号批量设置）
 
 ### Ribbon 配置 (`src/jsa/ribbon/`)
 
-- **`xmlConfig.ts`**：Ribbon XML 配置定义
-- **`actions.ts`**：按钮回调函数
-- **`taskPane.ts`**：任务窗格管理
+- **`xmlConfig.ts`**：Ribbon XML DSL 配置（构建时由 `vite-plugin-wps-enhance` 渲染为 `public/ribbon.xml`）
+- **`actions.ts`**：按钮回调（`onAction`、`getImage`、`onGetLabel`、`onGetEnabled`）
+- **`taskPane.ts`**：任务窗格创建/切换/隐藏（单例缓存 + 互斥显示）
 
 ## ⚙️ 配置说明
 
 ### 公文排版默认值（符合国标）
 
-| 元素       | 默认值         | 说明                   |
-| ---------- | -------------- | ---------------------- |
-| 标题字体   | 方正小标宋简体 | 二级标题使用黑体       |
-| 正文字体   | 仿宋\_GB2312   | 三号                   |
-| 标题字号   | 二号 (22pt)    |                        |
-| 正文字号   | 三号 (16pt)    |                        |
-| 正文行距   | 固定 28.95pt   | 三号字对应行距         |
-| 首行缩进   | 2 字符         | 即两个中文字符         |
-| 小标题加粗 | 整句加粗       | 可选“整句/前缀/不加粗” |
+| 元素        | 默认值          | 说明                           |
+| ----------- | --------------- | ------------------------------ |
+| 标题字体    | 方正小标宋\_GBK | 公文标题（居中、无缩进）       |
+| 正文字体    | 仿宋\_GB2312    | 中文三号；西文 Times New Roman |
+| 标题字号    | 二号 (22pt)     |                                |
+| 正文字号    | 三号 (16pt)     |                                |
+| 正文行距    | 固定 28.95pt    | 三号字对应行距                 |
+| 首行缩进    | 2 字符          | 即两个中文字符                 |
+| 一级标题 H1 | 黑体            | 不加粗                         |
+| 二级标题 H2 | 楷体\_GB2312    | 不加粗                         |
+| 三级标题 H3 | 仿宋\_GB2312    | 加粗                           |
+| 抬头/称谓   | 楷体\_GB2312    | 顶格（无缩进，由代码控制）     |
+| 小标题加粗  | 前缀加粗        | 可选“整句/前缀/不加粗”         |
 
 ### 页面布局默认值
 
@@ -302,35 +343,56 @@ read -p "按回车键退出..."
 | 页眉距离 |  15mm  | 纸张顶端到页眉下边缘   |
 | 页脚距离 |  24mm  | 纸张底端到页脚下边缘   |
 
-以上数值可在“排版设置”任务窗格中自定义。
+### 页眉/页脚默认值
+
+|   参数   | 默认值 | 说明                 |
+| :------: | :----: | -------------------- |
+| 页眉字体 |  黑体  | 三号（16pt）         |
+| 页眉位置 | 左对齐 | 可选左/中/右         |
+| 页眉内容 |   空   | 由用户填写           |
+| 页脚字体 |  宋体  | 四号（14pt）         |
+| 页脚页码 |  外侧  | 可选左/中/右/内/外侧 |
+
+以上数值可在“公文设置”与“页眉页脚”任务窗格中自定义。
 
 ## 🧩 自定义 Ribbon
 
-JS 加载项通过 `ribbon.xml` 渲染功能区选项卡和按钮，配置在 `src/jsa/ribbon/xmlConfig.ts` 中定义。按钮的回调在 `src/jsa/ribbon/actions.ts` 中实现。
+JS 加载项通过 `ribbon.xml` 渲染功能区选项卡和按钮，配置在 `src/jsa/ribbon/xmlConfig.ts` 中以 DSL 方式定义。
+
+由 `vite-plugin-wps-enhance` 在构建时生成 `public/ribbon.xml`。
+
+按钮的回调在 `src/jsa/ribbon/actions.ts` 中实现，并通过 `setupRibbonBindings()` 挂载到 `window`。
 
 ## ⚠️ 注意事项
 
 1. **WPS API 环境**：代码中使用了 `Application`、`wps.Enum` 等全局对象，这些仅在 WPS 运行时（或按 F12 打开的调试浏览器中）可用，在普通浏览器中无法调试。
 2. **跨平台兼容**：当前在 Windows、银河麒麟 V10 均已测试可用，Mac 版未测试。
 3. **安全策略**：加载项需在受信任后才能运行，开发调试时不需要。
+4. **开发期 Ribbon 卡顿**：`dev` 模式下首次点击自定义选项卡可能短暂卡顿 2~3 秒（生产构建无此问题），详见 [wiki](./wiki.md)。
 
 ## 🧑‍💻 开发指南
 
 请参考 [WPS JS 加载项官方文档](https://open.wps.cn/documents/app-integration-dev/wps365/client/wpsoffice/jsapi/addin-api/wps-addin-availability)
 
+更多开发事项（条件引导启动模式、弹窗秒开原理、已知问题与规避方案等）见 [wiki.md](./wiki.md)。
+
 ### 添加新的 Ribbon 按钮
 
-1. 在 `src/jsa/ribbon/xmlConfig.ts` 中定义 CustomUI DSL。
-2. 在 `src/jsa/ribbon/actions.ts` 中添加回调函数。
+1. 在 `src/jsa/ribbon/xmlConfig.ts` 中使用 `RibbonBuilder` DSL 定义按钮。
+2. 在 `src/jsa/ribbon/actions.ts` 的 `actionHandlers` 中注册与按钮 `id` 同名的回调。
 3. 在 `src/jsa/commands/` 下实现具体 WPS 命令。
 
 ### 添加新的任务窗格
 
-1. 在 `src/views/` 下创建 Vue 组件，vue 路由会自动生成 typescript 类型提示到 `typed-router.d.ts`，例如 `my-pane.vue`，并注册路径 `/my-pane` 与之对应，参见 [基于文件的路由 - Vue Router](https://router.vuejs.org/zh/file-based-routing/)。
-2. 在 `src/jsa/ribbon/taskPane.ts` 中通过函数注册并显示窗格：
+1. 在 `src/views/` 下创建 Vue 组件，路由会自动生成 TypeScript 类型提示到 `typed-router.d.ts`，例如 `my-pane.vue`，并注册路径 `/my-pane` 与之对应，参见 [基于文件的路由 - Vue Router](https://router.vuejs.org/zh/file-based-routing/)。
+2. 在 `src/jsa/utils/storage.ts` 的 `STORAGE_KEYS` 中新增一个存储键常量。
+3. 在 `src/jsa/ribbon/taskPane.ts` 的 `ROUTE_MAP` 中注册该键到对应的路由路径。
+4. 在 `src/jsa/ribbon/actions.ts` 中调用 `toggleTaskPane(STORAGE_KEYS.YOUR_KEY)` 来显示/隐藏窗格。
 
 ```ts
-function showTaskPane(storageKey: string, routePath: keyof RouteNamedMap);
+// taskPane.ts 内部已封装为单例缓存 + 互斥显示
+export function showTaskPane(key: string): void;
+export function toggleTaskPane(key: string): void;
 ```
 
 ### 添加新的命令
@@ -343,10 +405,19 @@ function showTaskPane(storageKey: string, routePath: keyof RouteNamedMap);
 
 项目早期遇到 WPS JS API 中部分类型缺失的问题：
 
-1. `Application.Enum`、`Application.NewEnum` 等属性在官方类型声明中未定义，但实际可用
+1. `Application.Enum`、`Application.NewEnum` 等属性在官方类型声明中未定义，但实际可用；
 2. `msoTrue`、`wdAlignParagraphCenter` 等在 JS 宏编辑器中可直接使用的常量未定义。
 
-已通过 `src/wps-env.d.ts` 对全局对象进行类型扩充，已完整解决。
+已通过插件生成的 `src/wps-env.d.ts` 对全局对象进行类型扩充。
+但由于从扩展后的 WpsNewEnum 扁平化的类型实在太多（6120+），实测已经严重影响性能，类型提示非常慢，建议直接使用裸名枚举，故仅定义为 Record：
+
+```ts
+declare namespace Wps {
+    interface Application {
+        Enum: Record<string, number>;
+    }
+}
+```
 
 ### Tailwind CSS v4 兼容性
 
