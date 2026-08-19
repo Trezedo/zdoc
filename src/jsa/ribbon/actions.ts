@@ -99,7 +99,7 @@ const actionHandlers: Partial<Record<RibbonControlId, RibbonAction>> = {
         }),
 
     btnFullHalfWidth: () => {
-        Application.Dialogs.Item(wps.Enum.wdDialogFormatChangeCase).Show();
+        Application.Dialogs.Item(wdDialogFormatChangeCase).Show();
     },
     btnTextViewCompare: () => toggleTaskPane(STORAGE_KEYS.TEXT_COMPARE_TASKPANE_ID),
 

@@ -48,7 +48,7 @@ function insertPageNumber(textRange: Wps.Range, font?: string, fontSize?: number
     // 定位到字母 X 所在字符，替换为页码域
     const indexOfX = template.indexOf("X");
     const targetChar = textRange.Characters.Item(indexOfX + 1);
-    targetChar.Fields.Add(targetChar, wps.Enum.wdFieldPage, "", true);
+    targetChar.Fields.Add(targetChar, wdFieldPage, "", true);
 }
 
 /**
@@ -88,7 +88,7 @@ function removeFooterShape(footer: Wps.HeaderFooter) {
             const shapeFields = textRange.Fields;
             let hasPageField = false;
             for (let j = shapeFields.Count; j >= 1; j--) {
-                if (shapeFields.Item(j).Type === wps.Enum.wdFieldPage) {
+                if (shapeFields.Item(j).Type === wdFieldPage) {
                     hasPageField = true;
                     break;
                 }
@@ -145,7 +145,7 @@ export function hasPagenum(): boolean {
         // 1. 检查页脚正文中的页码域
         const fields = footer.Range.Fields;
         for (let j = 1; j <= fields.Count; j++) {
-            if (fields.Item(j).Type === wps.Enum.wdFieldPage) {
+            if (fields.Item(j).Type === wdFieldPage) {
                 return true;
             }
         }
@@ -159,7 +159,7 @@ export function hasPagenum(): boolean {
                 if (!textRange) continue;
                 const shapeFields = textRange.Fields;
                 for (let f = 1; f <= shapeFields.Count; f++) {
-                    if (shapeFields.Item(f).Type === wps.Enum.wdFieldPage) {
+                    if (shapeFields.Item(f).Type === wdFieldPage) {
                         return true;
                     }
                 }
@@ -215,7 +215,7 @@ function createPagenumShape(
     insertPageNumber(textRange, font, fontSize);
 
     // 设置页码数字样式（仅新建时设置一次）
-    footer.PageNumbers.NumberStyle = wps.Enum.wdPageNumberStyleArabic;
+    footer.PageNumbers.NumberStyle = wdPageNumberStyleArabic;
 
     return shape;
 }
